@@ -2,17 +2,23 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+@TeleOp(name = "Comp1S3", group = "T3")
 public class TeleOpS3 extends LinearOpMode {
 
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+    private CRServo intakeLatch = null;
+    private CRServo intakeTurner = null;
+    private DcMotor conveyerBelt = null;
+    private DcMotor shooter = null;
 
     private double drive = 0;
     private double turn = 0;
@@ -28,6 +34,15 @@ public class TeleOpS3 extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
+        intakeLatch = hardwareMap.get(CRServo.class, "intakeLatch");
+        intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
+        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
+        shooter = hardwareMap.get(DcMotor.class, "shooter");
 
         while (opModeIsActive()) {
 
@@ -51,7 +66,28 @@ public class TeleOpS3 extends LinearOpMode {
             rightFrontDrive.setPower(limit(drive - turn + strafe));
             rightBackDrive.setPower(limit(drive - turn - strafe));
 
+            if (gamepad2.x) {
+                intakeLatch.setPower(1);
+            }
+            else if (gamepad2.y) {
+                intakeLatch.setPower(-1);
+            }
 
+            if (gamepad2.a) {
+                intakeTurner.setPower(1);
+            }
+
+            else if (gamepad2.b) {
+                intakeTurner.setPower(-1);
+            }
+
+            if (gamepad2.left_bumper) {
+                conveyerBelt.setPower(1);
+            }
+
+            else if (gamepad2.right_bumper) {
+                shooter.setPower(1);
+            }
         }
     }
 }
