@@ -15,7 +15,7 @@ public class TeleOpS3 extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private CRServo intakeLatch = null;
+
     private CRServo intakeTurner = null;
     private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
@@ -35,11 +35,15 @@ public class TeleOpS3 extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        telemetry.addData(">", "Press Start To Run TeleOp");
+        telemetry.update();
+
+        waitForStart();
+
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
-        intakeLatch = hardwareMap.get(CRServo.class, "intakeLatch");
         intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
         conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
@@ -65,13 +69,6 @@ public class TeleOpS3 extends LinearOpMode {
             leftBackDrive.setPower(limit(drive + turn - strafe));
             rightFrontDrive.setPower(limit(drive - turn + strafe));
             rightBackDrive.setPower(limit(drive - turn - strafe));
-
-            if (gamepad2.x) {
-                intakeLatch.setPower(1);
-            }
-            else if (gamepad2.y) {
-                intakeLatch.setPower(-1);
-            }
 
             if (gamepad2.a) {
                 intakeTurner.setPower(1);
