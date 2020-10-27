@@ -39,7 +39,7 @@ public class TeleOpS3 extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        //Hello, this is Withanage.
+        //Hello, this is Withanage...
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
