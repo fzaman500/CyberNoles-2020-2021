@@ -39,7 +39,6 @@ public class TeleOpS3 extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        //Test...
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
@@ -50,22 +49,25 @@ public class TeleOpS3 extends LinearOpMode {
         shooter = hardwareMap.get(DcMotor.class, "shooter");
 
         while (opModeIsActive()) {
-
+/**
             if (gamepad1.left_stick_y >= 0.05)
                 drive = 1;
-            else if (gamepad1.left_stick_y <= 0.05)
+            else if ((0 > gamepad1.left_stick_y) && (gamepad1.left_stick_y <= 0.05))
                 drive = -1;
 
             if (gamepad1.left_stick_x >= 0.05)
                 turn = 1;
-            else if (gamepad1.left_stick_x <= 0.05)
+            else if ((gamepad1.left_stick_x < 0) && gamepad1.left_stick_x <= 0.05))
                 turn = -1;
 
             if (gamepad1.right_stick_x >= 0.05)
                 strafe = 1;
-            else if (gamepad1.right_stick_x <= 0.05)
+            else if ((gamepad1.right_stick_x < 0) && (gamepad1.right_stick_x <= 0.05))
                 strafe = -1;
-
+**/
+            drive = 0;
+            turn = 0;
+            strafe = 0;
             leftFrontDrive.setPower(limit(drive + turn + strafe));
             leftBackDrive.setPower(limit(drive + turn - strafe));
             rightFrontDrive.setPower(limit(drive - turn + strafe));

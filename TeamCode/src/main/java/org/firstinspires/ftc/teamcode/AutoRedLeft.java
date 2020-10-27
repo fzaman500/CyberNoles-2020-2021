@@ -79,6 +79,8 @@ public class AutoRedLeft extends LinearOpMode {
         while (opModeIsActive()) {
             moveUntilTime("forward", 1000);
             moveUntilTime("right", 1000);
+            moveUntilTime("forward", 1000);
+            moveUntilTime("left", 1000);
             conveyerBelt.setPower(1);
             sleep(1000);
             conveyerBelt.setPower(0);
