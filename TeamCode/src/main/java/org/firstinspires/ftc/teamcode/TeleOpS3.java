@@ -49,35 +49,37 @@ public class TeleOpS3 extends LinearOpMode {
         shooter = hardwareMap.get(DcMotor.class, "shooter");
 
         while (opModeIsActive()) {
-/**
+            //Drivetrain commands.
+            //Made changes to the conditions for reverse.
+
             if (gamepad1.left_stick_y >= 0.05)
                 drive = 1;
-            else if ((0 > gamepad1.left_stick_y) && (gamepad1.left_stick_y <= 0.05))
+
+            else if (gamepad1.left_stick_y <= -0.05)
                 drive = -1;
 
             if (gamepad1.left_stick_x >= 0.05)
                 turn = 1;
-            else if ((gamepad1.left_stick_x < 0) && gamepad1.left_stick_x <= 0.05))
+
+            else if (gamepad1.left_stick_x <= -0.05)
                 turn = -1;
 
             if (gamepad1.right_stick_x >= 0.05)
                 strafe = 1;
-            else if ((gamepad1.right_stick_x < 0) && (gamepad1.right_stick_x <= 0.05))
+
+            else if (gamepad1.right_stick_x <= -0.05)
                 strafe = -1;
-**/
-            drive = 0;
-            turn = 0;
-            strafe = 0;
+
             leftFrontDrive.setPower(limit(drive + turn + strafe));
             leftBackDrive.setPower(limit(drive + turn - strafe));
             rightFrontDrive.setPower(limit(drive - turn + strafe));
             rightBackDrive.setPower(limit(drive - turn - strafe));
 
+            //Shooter commands.
             if (gamepad2.a) {
                 intakeTurner.setPower(1);
-            }
-
-            else if (gamepad2.b) {
+                
+            } else if (gamepad2.b) {
                 intakeTurner.setPower(-1);
             }
 
@@ -85,7 +87,7 @@ public class TeleOpS3 extends LinearOpMode {
                 conveyerBelt.setPower(1);
             }
 
-            else if (gamepad2.right_bumper) {
+            if (gamepad2.right_bumper) {
                 shooter.setPower(1);
             }
         }
