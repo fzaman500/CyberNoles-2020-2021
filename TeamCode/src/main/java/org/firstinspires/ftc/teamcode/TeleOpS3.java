@@ -4,9 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Comp1S3", group = "T3")
 public class TeleOpS3 extends LinearOpMode {
@@ -25,10 +22,10 @@ public class TeleOpS3 extends LinearOpMode {
     private double strafe = 0;
 
 
-    private double limit (double power){
-        if (power > 1)
+    private double limit(double power) {
+        if (power > 1) {
             return 1;
-        else
+        } else
             return power;
     }
 
@@ -52,23 +49,23 @@ public class TeleOpS3 extends LinearOpMode {
             //Drivetrain commands.
             //Made changes to the conditions for reverse.
 
-            if (gamepad1.left_stick_y >= 0.05)
+            if (gamepad1.left_stick_y >= 0.05) {
                 drive = 1;
-
-            else if (gamepad1.left_stick_y <= -0.05)
+            } else if (gamepad1.left_stick_y <= -0.05) {
                 drive = -1;
+            }
 
-            if (gamepad1.left_stick_x >= 0.05)
+            if (gamepad1.left_stick_x >= 0.05) {
                 turn = 1;
-
-            else if (gamepad1.left_stick_x <= -0.05)
+            } else if (gamepad1.left_stick_x <= -0.05) {
                 turn = -1;
+            }
 
-            if (gamepad1.right_stick_x >= 0.05)
+            if (gamepad1.right_stick_x >= 0.05) {
                 strafe = 1;
-
-            else if (gamepad1.right_stick_x <= -0.05)
+            } else if (gamepad1.right_stick_x <= -0.05) {
                 strafe = -1;
+            }
 
             leftFrontDrive.setPower(limit(drive + turn + strafe));
             leftBackDrive.setPower(limit(drive + turn - strafe));
@@ -76,20 +73,62 @@ public class TeleOpS3 extends LinearOpMode {
             rightBackDrive.setPower(limit(drive - turn - strafe));
 
             //Shooter commands.
+            //int degreeTurn = 0; //To be changed to a new value based on angle between lower position
+            //and conveyer belt.
+            boolean position = true; //True if arm is at lower position.
+
+            /*
             if (gamepad2.a) {
-                intakeTurner.setPower(1);
-                
-            } else if (gamepad2.b) {
-                intakeTurner.setPower(-1);
+                if (position)
+                {
+                    servoMotor.rotate(degreeTurn);
+                    position = false;
+                }
+                else
+                {
+                    servoMotor.rotate(-degreeTurn);
+                    position = true;
+                }
+                **/
+
+            if (gamepad2.a) {
+                if (position) {
+                    intakeTurner.setPower(1);
+                    position = false;
+
+                } else {
+                    intakeTurner.setPower(-1);
+                    position = true;
+                }
             }
 
-            if (gamepad2.left_bumper) {
-                conveyerBelt.setPower(1);
-            }
+                boolean beltRunning = false; //True if conveyer belt is running.
 
-            if (gamepad2.right_bumper) {
-                shooter.setPower(1);
+                if (gamepad2.left_bumper) {
+
+                    if (beltRunning = false) {
+                        conveyerBelt.setPower(1);
+                        beltRunning = true;
+
+                    } else {
+                        conveyerBelt.setPower(0);
+                        beltRunning = false;
+                    }
+                }
+
+                boolean shooterRunning = false; //True if shooter is running.
+
+                if (gamepad2.right_bumper) {
+
+                    if (shooterRunning = false) {
+                        shooter.setPower(1);
+                        shooterRunning = true;
+
+                    } else {
+                        shooter.setPower(0);
+                        shooterRunning = false;
+                    }
+                }
             }
         }
     }
-}
