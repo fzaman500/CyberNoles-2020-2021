@@ -46,25 +46,64 @@ public class TeleOpS3 extends LinearOpMode {
         shooter = hardwareMap.get(DcMotor.class, "shooter");
 
         while (opModeIsActive()) {
+
             //Drivetrain commands.
-            //Made changes to the conditions for reverse.
+            //Made changes to the conditions and changed all drivetrain commands to allow for creeping.
 
             if (gamepad1.left_stick_y >= 0.05) {
-                drive = 1;
+
+                if ((gamepad1.left_stick_y >= 0.05) && (gamepad1.left_stick_y <= 0.5)) {
+                    drive = 0.5;
+
+                } else {
+                    drive = 1;
+                }
+
             } else if (gamepad1.left_stick_y <= -0.05) {
-                drive = -1;
+
+                if ((gamepad1.left_stick_y <= -0.05) && (gamepad1.left_stick_y >= -0.5)) {
+                    drive = -0.5;
+                
+                } else {
+                    drive = -1;
+                }
             }
 
             if (gamepad1.left_stick_x >= 0.05) {
-                turn = 1;
+
+                if ((gamepad1.left_stick_x >= 0.05) && (gamepad1.left_stick_x <= 0.5)) {
+                    turn = 0.5;
+
+                } else {
+                    turn = 1;
+                }
+
             } else if (gamepad1.left_stick_x <= -0.05) {
-                turn = -1;
+
+                if ((gamepad1.left_stick_x <= -0.05) && (gamepad1.left_stick_x >= -0.5)) {
+                    turn = -0.5;
+
+                } else {
+                    turn = -1;
+                }
             }
 
             if (gamepad1.right_stick_x >= 0.05) {
-                strafe = 1;
+
+                if ((gamepad1.right_stick_x >= 0.05) && (gamepad1.right_stick_x <= 0.5)) {
+                    strafe = 0.5;
+
+                } else {
+                    strafe = 1;
+                }
+
             } else if (gamepad1.right_stick_x <= -0.05) {
-                strafe = -1;
+                if ((gamepad1.right_stick_x <= -0.05) && (gamepad1.right_stick_x >= -0.5)) {
+                    strafe = -0.5;
+
+                } else {
+                    strafe = -1;
+                }
             }
 
             leftFrontDrive.setPower(limit(drive + turn + strafe));
@@ -72,12 +111,10 @@ public class TeleOpS3 extends LinearOpMode {
             rightFrontDrive.setPower(limit(drive - turn + strafe));
             rightBackDrive.setPower(limit(drive - turn - strafe));
 
-            //Shooter commands.
-            //int degreeTurn = 0; //To be changed to a new value based on angle between lower position
-            //and conveyer belt.
-            boolean position = true; //True if arm is at lower position.
+            /*Shooter commands.
+             int degreeTurn = 0; //To be changed to a new value based on angle between lower position
+             and conveyer belt.
 
-            /*
             if (gamepad2.a) {
                 if (position)
                 {
@@ -90,6 +127,8 @@ public class TeleOpS3 extends LinearOpMode {
                     position = true;
                 }
                 **/
+
+            boolean position = true; //True if arm is at lower position.
 
             if (gamepad2.a) {
                 if (position) {
@@ -132,4 +171,3 @@ public class TeleOpS3 extends LinearOpMode {
             }
         }
     }
-    //Test...
