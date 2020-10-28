@@ -21,7 +21,6 @@ public class TeleOpS3 extends LinearOpMode {
     private double turn = 0;
     private double strafe = 0;
 
-
     private double limit(double power) {
         if (power > 1) {
             return 1;
@@ -111,61 +110,58 @@ public class TeleOpS3 extends LinearOpMode {
             rightFrontDrive.setPower(limit(drive - turn + strafe));
             rightBackDrive.setPower(limit(drive - turn - strafe));
 
-            /*Shooter commands.
-             int degreeTurn = 0; //To be changed to a new value based on angle between lower position
-             and conveyer belt.
-
-            if (gamepad2.a) {
-                if (position)
-                {
-                    servoMotor.rotate(degreeTurn);
-                    position = false;
-                }
-                else
-                {
-                    servoMotor.rotate(-degreeTurn);
-                    position = true;
-                }
-                **/
+            //Shooter commands.
 
             boolean position = true; //True if arm is at lower position.
 
             if (gamepad2.a) {
                 if (position) {
                     intakeTurner.setPower(1);
+                    sleep(500);
                     position = false;
 
                 } else {
                     intakeTurner.setPower(-1);
+                    sleep(500);
                     position = true;
                 }
             }
 
-                boolean beltRunning = false; //True if conveyer belt is running.
+                boolean beltRunning; //True if conveyer belt is running.
+
+            if (conveyerBelt.getPower() == 1) {
+                    beltRunning = true;
+
+            } else {
+                    beltRunning = false;
+            }
 
                 if (gamepad2.left_bumper) {
 
                     if (beltRunning = false) {
                         conveyerBelt.setPower(1);
-                        beltRunning = true;
 
                     } else {
                         conveyerBelt.setPower(0);
-                        beltRunning = false;
                     }
                 }
 
-                boolean shooterRunning = false; //True if shooter is running.
+                boolean shooterRunning; //True if shooter is running.
+
+            if (shooter.getPower() == 1) {
+                    shooterRunning = true;
+
+            } else {
+                    shooterRunning = false;
+                }
 
                 if (gamepad2.right_bumper) {
 
                     if (shooterRunning = false) {
                         shooter.setPower(1);
-                        shooterRunning = true;
 
                     } else {
                         shooter.setPower(0);
-                        shooterRunning = false;
                     }
                 }
             }
