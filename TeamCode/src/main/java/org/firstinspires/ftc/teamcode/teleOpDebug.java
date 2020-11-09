@@ -33,7 +33,7 @@ public class teleOpDebug extends LinearOpMode {
 
         double[][] directions = {
                 {1, -1, -1, 1},   /* up     */
-                {1, -1, -1, 1},   /* down     */
+                {-1, 1, 1, -1},   /* down     */
                 {1, 1, -1, -1},   /* left     */
                 {-1, -1, 1, 1},   /* right     */
         };
