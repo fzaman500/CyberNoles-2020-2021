@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 /* Import the cool API modules */
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import static java.lang.Math.abs;
 
@@ -14,6 +15,9 @@ public class teleOpDebug extends LinearOpMode {
     private DcMotor motorFrontRight;
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
+    private CRServo intakeTurner = null;
+    private DcMotor conveyerBelt = null;
+    private DcMotor shooter = null;
 
     @Override
     public void runOpMode() {
@@ -21,22 +25,29 @@ public class teleOpDebug extends LinearOpMode {
         motorFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         motorBackLeft = hardwareMap.get(DcMotor.class, "leftBackDrive");
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
+        intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
+        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
+        shooter = hardwareMap.get(DcMotor.class, "shooter");
 
         double maxPower = 1;
 
         double[][] directions = {
-                {-1, 1, -1, 1},   /* up     */
-                {1, -1, 1, -1},   /* down     */
+                {1, -1, -1, 1},   /* up     */
+                {1, -1, -1, 1},   /* down     */
                 {1, 1, -1, -1},   /* left     */
                 {-1, -1, 1, 1},   /* right     */
         };
-
+//turnin forward turns right
         //classic
         telemetry.addData(">", "Press Start To Run TeleOp");
         telemetry.update();
 
         /* Doesn't start input events until program intializes */
         waitForStart();
+
+        conveyerBelt.setPower(0);
+        shooter.setPower(0);
+        intakeTurner.setPower(0);
 
         while (opModeIsActive()) {
 
@@ -134,6 +145,30 @@ public class teleOpDebug extends LinearOpMode {
             motorFrontRight.setPower(FRpower);
             motorBackLeft.setPower(BLpower);
             motorBackRight.setPower(BRpower);
+
+            if (gamepad2.a) {
+                intakeTurner.setPower(1);
+            }
+
+            else if (gamepad2.b) {
+                intakeTurner.setPower(-1);
+            }
+            else {
+                intakeTurner.setPower(0);
+            }
+
+            if (gamepad2.left_bumper) {
+                conveyerBelt.setPower(1);
+            }
+
+            else if (gamepad2.right_bumper) {
+                shooter.setPower(1);
+            }
+
+            else {
+                conveyerBelt.setPower(0);
+                shooter.setPower(0);
+            }
 
             idle();
         }

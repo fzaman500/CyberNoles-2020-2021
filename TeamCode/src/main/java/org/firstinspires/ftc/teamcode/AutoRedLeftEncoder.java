@@ -2,25 +2,23 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "AutoRedLeft", group = "Linear OpMode")
-public class AutoRedLeft extends LinearOpMode {
+@Autonomous(name = "AutoRedLeftEncoder", group = "Linear OpMode")
+public class AutoRedLeftEncoder extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorFrontLeft = null;
     private DcMotor motorFrontRight = null;
     private DcMotor motorBackLeft = null;
     private DcMotor motorBackRight = null;
-    private CRServo intakeLatch = null;
-    private CRServo intakeTurner = null;
-    private DcMotor conveyerBelt = null;
-    private DcMotor shooter = null;
+
+    static final double MOTOR_TICK_COUNT = 1120;
+    double quarterTurn = (int)MOTOR_TICK_COUNT/4;
 
     double[][] directions = {
             {1, -1, 1, -1},   /* up     */
@@ -73,37 +71,36 @@ public class AutoRedLeft extends LinearOpMode {
         motorFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         motorBackLeft = hardwareMap.get(DcMotor.class, "leftBackDrive");
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
-        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
+
+        //reset encoders
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        telemetry.addData("Path0",  "Starting at %7d :%7d",
+                motorFrontLeft.getCurrentPosition(),
+                motorFrontRight.getCurrentPosition(),
+                motorBackLeft.getCurrentPosition(),
+                motorBackRight.getCurrentPosition());
+        telemetry.update();
 
         waitForStart();
 
+
         while (opModeIsActive()) {
-            moveUntilTime("forward", 1000);
-            moveUntilTime("right", 1000);
-            moveUntilTime("forward", 1000);
-            moveUntilTime("left", 1000);
-            conveyerBelt.setPower(1);
-            sleep(1000);
-            conveyerBelt.setPower(0);
-            shooter.setPower(1);
-            sleep(500);
-            shooter.setPower(0);
-            moveUntilTime("right", 500);
-            conveyerBelt.setPower(1);
-            sleep(1000);
-            conveyerBelt.setPower(0);
-            shooter.setPower(1);
-            sleep(500);
-            shooter.setPower(0);
-            moveUntilTime("right", 500);
-            conveyerBelt.setPower(1);
-            sleep(1000);
-            conveyerBelt.setPower(0);
-            shooter.setPower(1);
-            sleep(500);
-            shooter.setPower(0);
-            moveUntilTime("backward", 1000);
+           // moveUntilTime("forward", 1000);
+            //moveUntilTime("right", 1000);
+           // moveUntilTime("forward", 1000);
+           // moveUntilTime("left", 1000);
+
+
+
         }
     }
 }
