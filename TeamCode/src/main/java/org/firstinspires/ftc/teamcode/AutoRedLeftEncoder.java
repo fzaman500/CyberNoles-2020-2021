@@ -21,10 +21,10 @@ public class AutoRedLeftEncoder extends LinearOpMode {
     double quarterTurn = (int)MOTOR_TICK_COUNT/4;
 
     double[][] directions = {
-            {1, -1, 1, -1},   /* up     */
-            {-1, 1, -1, 1},   /* down     */
-            {-1, -1, 1, 1},   /* left     */
-            {1, 1, -1, -1},   /* right     */
+            {-1, 1, 1, -1},   /* up     */
+            {1, -1, -1, 1},   /* down     */
+            {1, 1, -1, -1},   /* left     */
+            {-1, -1, 1, 1}   /* right     */
     };
 
     public void move(String direction) {
@@ -46,7 +46,7 @@ public class AutoRedLeftEncoder extends LinearOpMode {
     }
 
 
-    public void moveUntilTime(String direction, int time){
+    public void moveUntilTicks(String direction, int time){
         move(direction);
         double debounce = runtime.seconds() + 0.0;
         while (debounce + (time / 1000.0) > runtime.seconds() && opModeIsActive()) {}
@@ -94,6 +94,10 @@ public class AutoRedLeftEncoder extends LinearOpMode {
 
 
         while (opModeIsActive()) {
+            motorFrontLeft.getCurrentPosition();
+            motorFrontRight.getCurrentPosition();
+            motorBackLeft.getCurrentPosition();
+            motorBackRight.getCurrentPosition();
            // moveUntilTime("forward", 1000);
             //moveUntilTime("right", 1000);
            // moveUntilTime("forward", 1000);

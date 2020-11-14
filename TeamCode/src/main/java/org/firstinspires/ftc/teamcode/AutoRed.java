@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "AutoRedJUSTGOAL", group = "Linear OpMode")
-public class AutoRedLeft extends LinearOpMode {
+@Autonomous(name = "AutoRedTHIS", group = "Linear OpMode")
+public class AutoRed extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorFrontLeft;
@@ -81,17 +81,18 @@ public class AutoRedLeft extends LinearOpMode {
 
         while (opModeIsActive()) {
             shooter.setPower(-1);
-            moveUntilTime("forward", 750);
+            moveUntilTime("forward", 550);
             conveyerBelt.setPower(-1);
             sleep(500);
             conveyerBelt.setPower(0);
-            sleep(3000);
+            moveUntilTime("left", 200);
             conveyerBelt.setPower(-1);
             sleep(500);
             conveyerBelt.setPower(0);
-            sleep(3000);
+            moveUntilTime("left", 200);
             conveyerBelt.setPower(-1);
             sleep(1000);
+            moveUntilTime("forward", 650);
             conveyerBelt.setPower(0);
             shooter.setPower(0);
             sleep(30000);

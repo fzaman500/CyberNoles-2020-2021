@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import static java.lang.Math.abs;
 
@@ -16,6 +17,8 @@ public class teleOpDebug extends LinearOpMode {
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
     private CRServo intakeTurner = null;
+    private Servo wobbleLatcher = null;
+    private CRServo wobbleTurner = null;
     private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
 
@@ -28,14 +31,16 @@ public class teleOpDebug extends LinearOpMode {
         intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
         conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
+        wobbleLatcher = hardwareMap.get(Servo.class, "wobbleLatcher");
+        wobbleTurner = hardwareMap.get(CRServo.class, "wobbleTurner");
 
         double maxPower = 1;
 
         double[][] directions = {
-                {1, -1, -1, 1},   /* up     */
-                {-1, 1, 1, -1},   /* down     */
+                {-1, 1, 1, -1},   /* up     */
+                {1, -1, -1, 1},   /* down     */
                 {1, 1, -1, -1},   /* left     */
-                {-1, -1, 1, 1},   /* right     */
+                {-1, -1, 1, 1}   /* right     */
         };
 //turnin forward turns right
         //classic
@@ -48,6 +53,8 @@ public class teleOpDebug extends LinearOpMode {
         conveyerBelt.setPower(0);
         shooter.setPower(0);
         intakeTurner.setPower(0);
+        wobbleTurner.setPower(0);
+
 
         while (opModeIsActive()) {
 
@@ -157,12 +164,46 @@ public class teleOpDebug extends LinearOpMode {
                 intakeTurner.setPower(0);
             }
 
-            if (gamepad2.left_bumper) {
+            if (gamepad1.left_bumper) {
+                wobbleTurner.setPower(1);
+            }
+
+            else if (gamepad1.right_bumper) {
+                wobbleTurner.setPower(-1);
+            }
+
+            else {
+                wobbleTurner.setPower(0);
+            }
+
+            if (gamepad1.x && wobbleLatcher.getPosition() < 1) {
+                wobbleLatcher.setPosition(wobbleLatcher.getPosition() + 0.1);
+            }
+
+            else if (gamepad1.y && wobbleLatcher.getPosition() > 0) {
+                wobbleLatcher.setPosition(wobbleLatcher.getPosition() - 0.1);
+            }
+
+            if (gamepad2.dpad_up) {
+                conveyerBelt.setPower(-1);
+            }
+
+            else if (gamepad2.dpad_down) {
                 conveyerBelt.setPower(1);
             }
 
-            else if (gamepad2.right_bumper) {
-                shooter.setPower(1);
+            else {
+                conveyerBelt.setPower(0);
+            }
+
+            if (gamepad2.right_bumper) {
+                shooter.setPower(-1);
+                conveyerBelt.setPower(-1);
+            }
+
+            else if (gamepad2.left_bumper) {
+                shooter.setPower(-1);
+                conveyerBelt.setPower(0);
             }
 
             else {
