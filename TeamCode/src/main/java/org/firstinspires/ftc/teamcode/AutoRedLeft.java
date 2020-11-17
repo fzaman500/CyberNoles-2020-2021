@@ -96,6 +96,7 @@ public class AutoRedLeft extends LinearOpMode {
             moveUntilTime("right", 300);
             moveUntilTime("reverse", 750);
             sleep(30000);
+            //...
         }
     }
 }
