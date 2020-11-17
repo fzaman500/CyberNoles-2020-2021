@@ -117,7 +117,7 @@ public class TeleOpS3 extends LinearOpMode {
             if (gamepad2.a) {
                 if (position) {
                     intakeTurner.setPower(1);
-                    sleep(500);
+                    sleep(500); //Change delay.
                     position = false;
 
                 } else {
