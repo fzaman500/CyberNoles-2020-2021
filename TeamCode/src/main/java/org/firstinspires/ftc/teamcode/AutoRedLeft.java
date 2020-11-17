@@ -94,9 +94,8 @@ public class AutoRedLeft extends LinearOpMode {
             conveyerBelt.setPower(0);
             shooter.setPower(0);*/
             moveUntilTime("right", 300);
-            moveUntilTime("reverse", 750);
+            moveUntilTime("backward", 750);
             sleep(30000);
-            //...
         }
     }
 }
