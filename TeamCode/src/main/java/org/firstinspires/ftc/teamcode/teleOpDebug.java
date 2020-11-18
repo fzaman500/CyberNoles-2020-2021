@@ -21,6 +21,7 @@ public class teleOpDebug extends LinearOpMode {
     private CRServo wobbleTurner = null;
     private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
+ //   private Servo intakePusher = null;
 
     @Override
     public void runOpMode() {
@@ -33,6 +34,7 @@ public class teleOpDebug extends LinearOpMode {
         shooter = hardwareMap.get(DcMotor.class, "shooter");
         wobbleLatcher = hardwareMap.get(Servo.class, "wobbleLatcher");
         wobbleTurner = hardwareMap.get(CRServo.class, "wobbleTurner");
+     //   intakePusher = hardwareMap.get(Servo.class, "intakePusher");
 
         double maxPower = 1;
 
@@ -183,7 +185,14 @@ public class teleOpDebug extends LinearOpMode {
             else if (gamepad1.y && wobbleLatcher.getPosition() > 0) {
                 wobbleLatcher.setPosition(wobbleLatcher.getPosition() - 0.1);
             }
-
+/**
+            if (gamepad2.dpad_left && intakePusher.getPosition() < 1) {
+                intakePusher.setPosition(intakePusher.getPosition() + 0.1);
+            }
+            else if (gamepad2.dpad_right && intakePusher.getPosition() > 0) {
+                intakePusher.setPosition(intakePusher.getPosition() - 0.1);
+            }
+**/
             if (gamepad2.dpad_up) {
                 conveyerBelt.setPower(-1);
             }
@@ -196,18 +205,18 @@ public class teleOpDebug extends LinearOpMode {
                 conveyerBelt.setPower(0);
             }
 
-            if (gamepad2.right_bumper) {
+        /**    if (gamepad2.right_bumper) {
                 shooter.setPower(-1);
                 conveyerBelt.setPower(-1);
-            }
+            } **/
 
-            else if (gamepad2.left_bumper) {
+            if (gamepad2.left_bumper) {
                 shooter.setPower(-1);
-                conveyerBelt.setPower(0);
+             //   conveyerBelt.setPower(0);
             }
 
             else {
-                conveyerBelt.setPower(0);
+              //  conveyerBelt.setPower(0);
                 shooter.setPower(0);
             }
 
