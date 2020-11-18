@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -80,20 +78,23 @@ public class AutoRedLeft extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            shooter.setPower(-1);
+            //shooter.setPower(-1);
             moveUntilTime("forward", 750);
-            conveyerBelt.setPower(-1);
-            sleep(500);
+            moveUntilTime("left", 100);
+            /*conveyerBelt.setPower(-1);
+            sleep(200);
+            conveyerBelt.setPower(0);*/
+            moveUntilTime("left", 50);
+            /*conveyerBelt.setPower(-1);
+            sleep(200);
+            conveyerBelt.setPower(0); */
+            moveUntilTime("left", 50);
+            /*conveyerBelt.setPower(-1);
+            sleep(300);
             conveyerBelt.setPower(0);
-            sleep(3000);
-            conveyerBelt.setPower(-1);
-            sleep(500);
-            conveyerBelt.setPower(0);
-            sleep(3000);
-            conveyerBelt.setPower(-1);
-            sleep(1000);
-            conveyerBelt.setPower(0);
-            shooter.setPower(0);
+            shooter.setPower(0);*/
+            moveUntilTime("right", 300);
+            moveUntilTime("backward", 750);
             sleep(30000);
         }
     }
