@@ -23,6 +23,13 @@ public class teleOpDebug extends LinearOpMode {
     private DcMotor shooter = null;
  //   private Servo intakePusher = null;
 
+    private double limit(double power) {
+        if (power > 1)
+            return 1;
+        else
+            return power;
+    }
+
     @Override
     public void runOpMode() {
         motorFrontLeft = hardwareMap.get(DcMotor.class, "leftFrontDrive");
@@ -118,10 +125,10 @@ public class teleOpDebug extends LinearOpMode {
                  * For example, pushing the joystick halfway up will
                  * only using the instructions for "up" at a half amount,
                  * resulting in the robot moving forward at half speed.*/
-                FLpower += (directions[dir1][0] * totalPower * abs(leftStickX)) + (directions[dir2][0] * totalPower * abs(leftStickY));
-                FRpower += (directions[dir1][1] * totalPower * abs(leftStickX)) + (directions[dir2][1] * totalPower * abs(leftStickY));
-                BLpower += (directions[dir1][2] * totalPower * abs(leftStickX)) + (directions[dir2][2] * totalPower * abs(leftStickY));
-                BRpower += (directions[dir1][3] * totalPower * abs(leftStickX)) + (directions[dir2][3] * totalPower * abs(leftStickY));
+                FLpower += limit(Math.pow((directions[dir1][0] * totalPower * abs(leftStickX)) + (directions[dir2][0] * totalPower * abs(leftStickY)), 3));
+                FRpower += limit(Math.pow((directions[dir1][1] * totalPower * abs(leftStickX)) + (directions[dir2][1] * totalPower * abs(leftStickY)), 3));
+                BLpower += limit(Math.pow((directions[dir1][2] * totalPower * abs(leftStickX)) + (directions[dir2][2] * totalPower * abs(leftStickY)), 3));
+                BRpower += limit(Math.pow((directions[dir1][3] * totalPower * abs(leftStickX)) + (directions[dir2][3] * totalPower * abs(leftStickY)), 3));
             }
 
             if (abs(rightStickX) > 0.05) {
