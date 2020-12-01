@@ -58,6 +58,12 @@ public class AutoRedLeft extends LinearOpMode {
         motorBackRight.setPower(0);
     }
 
+    public int inchesToTime(double in){
+        double tDouble = (in)*17.54385964912;
+        int t = (int) tDouble;
+        return t;
+    }
+
     private double limit(double power) {
         if (power > 1)
             return 1;
@@ -78,23 +84,26 @@ public class AutoRedLeft extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            //shooter.setPower(-1);
-            moveUntilTime("forward", 750);
-            moveUntilTime("left", 100);
-            /*conveyerBelt.setPower(-1);
+            shooter.setPower(-1);
+            moveUntilTime("forward", inchesToTime(58));
             sleep(200);
-            conveyerBelt.setPower(0);*/
-            moveUntilTime("left", 50);
-            /*conveyerBelt.setPower(-1);
+            moveUntilTime("left", inchesToTime(17.25));
             sleep(200);
-            conveyerBelt.setPower(0); */
-            moveUntilTime("left", 50);
-            /*conveyerBelt.setPower(-1);
+            conveyerBelt.setPower(-1);
+            sleep(200);
+            conveyerBelt.setPower(0);
+            moveUntilTime("left", inchesToTime(5.4));
+            sleep(100);
+            conveyerBelt.setPower(-1);
+            sleep(200);
+            conveyerBelt.setPower(0);
+            moveUntilTime("left", inchesToTime(5.4));
+            conveyerBelt.setPower(-1);
             sleep(300);
             conveyerBelt.setPower(0);
-            shooter.setPower(0);*/
-            moveUntilTime("right", 300);
-            moveUntilTime("backward", 750);
+            shooter.setPower(0);
+            moveUntilTime("right", inchesToTime(28.1));
+            moveUntilTime("backward", inchesToTime(58));
             sleep(30000);
         }
     }
