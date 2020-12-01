@@ -46,6 +46,11 @@ public class AutoRed extends LinearOpMode {
         }
     }
 
+    public int inchesToTime(double in){
+        double tDouble = (in)*17.54385964912;
+        int t = (int) tDouble;
+        return t;
+    }
 
     public void moveUntilTime(String direction, int time){
         move(direction);
@@ -79,27 +84,16 @@ public class AutoRed extends LinearOpMode {
 
         while (opModeIsActive()) {
             shooter.setPower(-1);
-            moveUntilTime("forward", 700); //-Withanage, haven't tested correct delay yet.
-            /*conveyerBelt.setPower(-1);
-            sleep(500);
-            conveyerBelt.setPower(0);
-            moveUntilTime("left", 200);
+            moveUntilTime("forward", inchesToTime(58));
             conveyerBelt.setPower(-1);
-            sleep(500);
+            sleep(200);
             conveyerBelt.setPower(0);
-            moveUntilTime("left", 200);*/
+            sleep(200);
             conveyerBelt.setPower(-1);
-            sleep(300);
+            sleep(200);
             conveyerBelt.setPower(0);
-            sleep(300);
-            conveyerBelt.setPower(-1);
-            sleep(300);
-            conveyerBelt.setPower(0);
-            sleep(300);
-            conveyerBelt.setPower(-1);
-            sleep(300);
-            conveyerBelt.setPower(0);
-            moveUntilTime("reverse", 700);
+            sleep(200);
+            moveUntilTime("backward", inchesToTime(58));
             shooter.setPower(0);
             sleep(30000);
         }
