@@ -25,6 +25,11 @@ public class AutoRedLeftEncoder extends LinearOpMode {
     private DcMotor motorFrontRight = null;
     private DcMotor motorBackLeft = null;
     private DcMotor motorBackRight = null;
+    private DcMotor intakeFirst = null;
+    private CRServo intakeTurner = null;
+    private CRServo intakeFlipper = null;
+    private DcMotor conveyerBelt = null;
+    private DcMotor shooter = null;
 
     BNO055IMU               imu;
     Orientation             lastAngles = new Orientation();
@@ -34,10 +39,10 @@ public class AutoRedLeftEncoder extends LinearOpMode {
     double quarterTurn = (int)MOTOR_TICK_COUNT/4;
 
     double[][] directions = {
-            {-1, 1, 1, -1},   /* up     */
-            {1, -1, -1, 1},   /* down     */
-            {1, 1, -1, -1},   /* left     */
-            {-1, -1, 1, 1},   /* right     */
+            {1, -1, -1, 1},   /* up     */
+            {-1, 1, 1, -1},   /* down     */
+            {-1, -1, 1, 1},   /* left     */
+            {1, 1, -1, -1},   /* right     */
             {-1, 1, -1, 1},   /* turn right     */
             {1, -1, 1, -1}   /* turn left     */
     };
@@ -152,7 +157,12 @@ public class AutoRedLeftEncoder extends LinearOpMode {
         motorFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         motorBackLeft = hardwareMap.get(DcMotor.class, "leftBackDrive");
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
-
+        intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
+        intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
+        intakeFlipper = hardwareMap.get(CRServo.class, "intakeFlipper");
+        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
+        shooter = hardwareMap.get(DcMotor.class, "shooter");
+/*
         //reset encoders
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -163,7 +173,7 @@ public class AutoRedLeftEncoder extends LinearOpMode {
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+*/
         telemetry.addData("Path0",  "Starting at %7d :%7d",
                 motorFrontLeft.getCurrentPosition(),
                 motorFrontRight.getCurrentPosition(),
@@ -206,10 +216,39 @@ public class AutoRedLeftEncoder extends LinearOpMode {
             sleep(3000);
             moveUntilTime("turn left", 2000);*/
 
-            moveUntilTicks("right", 2000);
+            //intakeTurner.setPower(-1);
+            //sleep(2000);
+            //intakeTurner.setPower(0);
+            //sleep(5000);
+            intakeFlipper.setPower(1);
+            sleep(2000);
+            intakeFlipper.setPower(0);
+            shooter.setPower(-1);
+            sleep(1000);
+            shooter.setPower(0);
+            intakeFlipper.setPower(-.25);
+            moveUntilTime("forward", 1250);
+            //moveUntilTime("left", 750);
+            sleep(2000);
+            conveyerBelt.setPower(1);
+            sleep(1000);
+            conveyerBelt.setPower(0);
+           // moveUntilTime("left", 500);
+            sleep(3500);
+            conveyerBelt.setPower(1);
+            sleep(1000);
+            conveyerBelt.setPower(0);
+          //  moveUntilTime("left", 500);
+            sleep(3000);
+            conveyerBelt.setPower(1);
+            sleep(1000);
+            conveyerBelt.setPower(0);
+            shooter.setPower(0);
+            moveUntilTime("forward", 500);
+            intakeFlipper.setPower(0);
+            break;
 
 
-            sleep(30000);
 
 
 
@@ -273,7 +312,7 @@ public class AutoRedLeftEncoder extends LinearOpMode {
         // The gain value determines how sensitive the correction is to direction changes.
         // You will have to experiment with your robot to get small smooth direction changes
         // to stay on a straight line.
-        double correction, angle, gain = .30;
+        double correction, angle, gain = .80;
 
         angle = getAngle();
 

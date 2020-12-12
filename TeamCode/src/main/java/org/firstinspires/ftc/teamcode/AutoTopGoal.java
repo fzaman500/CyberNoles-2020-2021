@@ -15,9 +15,8 @@ public class AutoTopGoal extends LinearOpMode {
     private DcMotor motorFrontRight;
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
+    private DcMotor intakeFirst = null;
     private CRServo intakeTurner = null;
-    private Servo wobbleLatcher = null;
-    private CRServo wobbleTurner = null;
     private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
 
@@ -78,6 +77,8 @@ public class AutoTopGoal extends LinearOpMode {
         motorFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         motorBackLeft = hardwareMap.get(DcMotor.class, "leftBackDrive");
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
+        intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
+        intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
         conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
 

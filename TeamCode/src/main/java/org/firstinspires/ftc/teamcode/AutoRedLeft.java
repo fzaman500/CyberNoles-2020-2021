@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "AutoRedJUSTGOAL", group = "Linear OpMode")
+@Autonomous(name = "AutoRedPegs", group = "Linear OpMode")
 public class AutoRedLeft extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -15,9 +15,8 @@ public class AutoRedLeft extends LinearOpMode {
     private DcMotor motorFrontRight;
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
+    private DcMotor intakeFirst = null;
     private CRServo intakeTurner = null;
-    private Servo wobbleLatcher = null;
-    private CRServo wobbleTurner = null;
     private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
 
@@ -72,30 +71,35 @@ public class AutoRedLeft extends LinearOpMode {
         motorFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         motorBackLeft = hardwareMap.get(DcMotor.class, "leftBackDrive");
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
+        intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
+        intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
         conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
 
         waitForStart();
 
         while (opModeIsActive()) {
-            //shooter.setPower(-1);
-            moveUntilTime("forward", 750);
-            moveUntilTime("left", 100);
-            /*conveyerBelt.setPower(-1);
-            sleep(200);
-            conveyerBelt.setPower(0);*/
-            moveUntilTime("left", 50);
-            /*conveyerBelt.setPower(-1);
-            sleep(200);
-            conveyerBelt.setPower(0); */
-            moveUntilTime("left", 50);
-            /*conveyerBelt.setPower(-1);
-            sleep(300);
+            sleep(2000);
+            shooter.setPower(-1);
+            moveUntilTime("forward", 1250);
+            //moveUntilTime("left", 500);
+            sleep(2000);
+            conveyerBelt.setPower(1);
+            sleep(2000);
             conveyerBelt.setPower(0);
-            shooter.setPower(0);*/
-            moveUntilTime("right", 300);
-            moveUntilTime("backward", 750);
-            sleep(30000);
+            //moveUntilTime("left", 500);
+            sleep(3500);
+            conveyerBelt.setPower(1);
+            sleep(2000);
+            conveyerBelt.setPower(0);
+            //moveUntilTime("left", 500);
+            sleep(3000);
+            conveyerBelt.setPower(1);
+            sleep(2000);
+            conveyerBelt.setPower(0);
+            shooter.setPower(0);
+            moveUntilTime("forward", 500);
+            break;
         }
     }
 }

@@ -9,19 +9,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import static java.lang.Math.abs;
 
 /* Program for controller */
-@TeleOp(name = "TeleOpDEBUG", group = "T3")
+@TeleOp(name = "TeleOpS3", group = "T3")
 public class teleOpDebug extends LinearOpMode {
 
     private DcMotor motorFrontLeft;
     private DcMotor motorFrontRight;
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
+    private DcMotor intakeFirst = null;
     private CRServo intakeTurner = null;
-    private Servo wobbleLatcher = null;
-    private CRServo wobbleTurner = null;
+    private CRServo intakeFlipper = null;
     private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
- //   private Servo intakePusher = null;
+    private DcMotor wobbleFlipper = null;
+    private Servo wobbleIntake = null;
 
     private double limit(double power) {
         if (power > 1)
@@ -36,12 +37,14 @@ public class teleOpDebug extends LinearOpMode {
         motorFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         motorBackLeft = hardwareMap.get(DcMotor.class, "leftBackDrive");
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
+        intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
         intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
         conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
-        wobbleLatcher = hardwareMap.get(Servo.class, "wobbleLatcher");
-        wobbleTurner = hardwareMap.get(CRServo.class, "wobbleTurner");
-     //   intakePusher = hardwareMap.get(Servo.class, "intakePusher");
+        intakeFlipper = hardwareMap.get(CRServo.class, "intakeFlipper");
+        wobbleFlipper = hardwareMap.get(DcMotor.class, "wobbleFlipper");
+        wobbleIntake = hardwareMap.get(Servo.class, "wobbleIntake");
+
 
         double maxPower = 1;
 
@@ -62,7 +65,7 @@ public class teleOpDebug extends LinearOpMode {
         conveyerBelt.setPower(0);
         shooter.setPower(0);
         intakeTurner.setPower(0);
-        wobbleTurner.setPower(0);
+        intakeFirst.setPower(0);
 
 
         while (opModeIsActive()) {
@@ -163,43 +166,38 @@ public class teleOpDebug extends LinearOpMode {
             motorBackRight.setPower(BRpower);
 
             if (gamepad2.a) {
-                intakeTurner.setPower(1);
-            }
-
-            else if (gamepad2.b) {
                 intakeTurner.setPower(-1);
+                intakeFirst.setPower(1);
             }
             else {
                 intakeTurner.setPower(0);
+                intakeFirst.setPower(0);
             }
 
-            if (gamepad1.left_bumper) {
-                wobbleTurner.setPower(1);
+            if (gamepad2.b) {
+                intakeFlipper.setPower(1);
             }
 
-            else if (gamepad1.right_bumper) {
-                wobbleTurner.setPower(-1);
+            if (gamepad2.x) {
+                wobbleFlipper.setPower(0.5);
+            }
+
+            else if (gamepad2.y) {
+                wobbleFlipper.setPower(-0.5);
             }
 
             else {
-                wobbleTurner.setPower(0);
+                wobbleFlipper.setPower(0);
             }
 
-            if (gamepad1.x && wobbleLatcher.getPosition() < 1) {
-                wobbleLatcher.setPosition(wobbleLatcher.getPosition() + 0.1);
+            if (gamepad1.x && wobbleIntake.getPosition() < 1) {
+                wobbleIntake.setPosition(wobbleIntake.getPosition() + 0.1);
             }
 
-            else if (gamepad1.y && wobbleLatcher.getPosition() > 0) {
-                wobbleLatcher.setPosition(wobbleLatcher.getPosition() - 0.1);
+            else if (gamepad1.y && wobbleIntake.getPosition() > 0) {
+                wobbleIntake.setPosition(wobbleIntake.getPosition() - 0.1);
             }
-/**
-            if (gamepad2.dpad_left && intakePusher.getPosition() < 1) {
-                intakePusher.setPosition(intakePusher.getPosition() + 0.1);
-            }
-            else if (gamepad2.dpad_right && intakePusher.getPosition() > 0) {
-                intakePusher.setPosition(intakePusher.getPosition() - 0.1);
-            }
-**/
+
             if (gamepad2.dpad_up) {
                 conveyerBelt.setPower(-1);
             }
@@ -212,18 +210,14 @@ public class teleOpDebug extends LinearOpMode {
                 conveyerBelt.setPower(0);
             }
 
-        /**    if (gamepad2.right_bumper) {
-                shooter.setPower(-1);
-                conveyerBelt.setPower(-1);
-            } **/
-
             if (gamepad2.left_bumper) {
                 shooter.setPower(-1);
-             //   conveyerBelt.setPower(0);
             }
-
+            else if (gamepad2.right_bumper) {
+                shooter.setPower(-1);
+                conveyerBelt.setPower(1);
+            }
             else {
-              //  conveyerBelt.setPower(0);
                 shooter.setPower(0);
             }
 
