@@ -19,7 +19,6 @@ public class teleOpDebug extends LinearOpMode {
     private DcMotor intakeFirst = null;
     private CRServo intakeTurner = null;
     private CRServo intakeFlipper = null;
-    private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
     private DcMotor wobbleFlipper = null;
     private Servo wobbleIntake = null;
@@ -39,7 +38,6 @@ public class teleOpDebug extends LinearOpMode {
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
         intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
         intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
-        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
         intakeFlipper = hardwareMap.get(CRServo.class, "intakeFlipper");
         wobbleFlipper = hardwareMap.get(DcMotor.class, "wobbleFlipper");
@@ -62,7 +60,6 @@ public class teleOpDebug extends LinearOpMode {
         /* Doesn't start input events until program intializes */
         waitForStart();
 
-        conveyerBelt.setPower(0);
         shooter.setPower(0);
         intakeTurner.setPower(0);
         intakeFirst.setPower(0);
@@ -167,11 +164,9 @@ public class teleOpDebug extends LinearOpMode {
 
             if (gamepad2.a) {
                 intakeTurner.setPower(-1);
-                intakeFirst.setPower(1);
             }
             else {
                 intakeTurner.setPower(0);
-                intakeFirst.setPower(0);
             }
 
             if (gamepad2.b) {
@@ -199,23 +194,22 @@ public class teleOpDebug extends LinearOpMode {
             }
 
             if (gamepad2.dpad_up) {
-                conveyerBelt.setPower(-1);
+                intakeFirst.setPower(1);
             }
 
             else if (gamepad2.dpad_down) {
-                conveyerBelt.setPower(1);
+                intakeFirst.setPower(-1);
             }
 
             else {
-                conveyerBelt.setPower(0);
+                intakeFirst.setPower(0);
             }
 
             if (gamepad2.left_bumper) {
                 shooter.setPower(-1);
             }
             else if (gamepad2.right_bumper) {
-                shooter.setPower(-1);
-                conveyerBelt.setPower(1);
+                shooter.setPower(1);
             }
             else {
                 shooter.setPower(0);

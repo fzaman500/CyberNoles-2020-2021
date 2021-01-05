@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "AutoRedPegs", group = "Linear OpMode")
@@ -17,7 +16,6 @@ public class AutoRedLeft extends LinearOpMode {
     private DcMotor motorBackRight;
     private DcMotor intakeFirst = null;
     private CRServo intakeTurner = null;
-    private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
 
     double[][] directions = {
@@ -73,7 +71,6 @@ public class AutoRedLeft extends LinearOpMode {
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
         intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
         intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
-        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
 
         waitForStart();
@@ -82,7 +79,22 @@ public class AutoRedLeft extends LinearOpMode {
             sleep(2000);
             shooter.setPower(-1);
             moveUntilTime("forward", 1250);
-            //moveUntilTime("left", 500);
+            moveUntilTime("left", 500);
+            intakeFirst.setPower(1);
+            sleep(300);
+            intakeFirst.setPower(0);
+            moveUntilTime("left", 250);
+            intakeFirst.setPower(1);
+            sleep(300);
+            intakeFirst.setPower(0);
+            moveUntilTime("left", 250);
+            intakeTurner.setPower(1);
+            sleep(300);
+            intakeFirst.setPower(0);
+            shooter.setPower(0);
+            moveUntilTime("right", 1000);
+            moveUntilTime("backward", 1250);
+            /*
             sleep(2000);
             conveyerBelt.setPower(1);
             sleep(2000);
@@ -99,6 +111,7 @@ public class AutoRedLeft extends LinearOpMode {
             conveyerBelt.setPower(0);
             shooter.setPower(0);
             moveUntilTime("forward", 500);
+            */
             break;
         }
     }
