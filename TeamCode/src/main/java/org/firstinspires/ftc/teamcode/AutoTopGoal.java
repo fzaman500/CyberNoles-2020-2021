@@ -87,7 +87,7 @@ public class AutoTopGoal extends LinearOpMode {
             sleep(3000);
             intakeFirst.setPower(1);
             sleep(5000);
-            intakeFirst.setPower(1);
+            intakeFirst.setPower(0);
             shooter.setPower(0);
             moveUntilTime("forward", inchesToTime(66.0));
             break;
