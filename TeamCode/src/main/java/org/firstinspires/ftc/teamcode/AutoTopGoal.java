@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "AutoTopGoal", group = "Linear OpMode")
@@ -17,7 +16,6 @@ public class AutoTopGoal extends LinearOpMode {
     private DcMotor motorBackRight;
     private DcMotor intakeFirst = null;
     private CRServo intakeTurner = null;
-    private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
 
     double[][] directions = {
@@ -79,29 +77,19 @@ public class AutoTopGoal extends LinearOpMode {
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
         intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
         intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
-        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
 
         waitForStart();
 
         while (opModeIsActive()) {
+            shooter.setPower(-1);
             moveUntilTime("forward", inchesToTime(66.0));
-            shooter.setPower(-0.9);
-            sleep(8000);
-            conveyerBelt.setPower(-1);
-            sleep(100);
-            conveyerBelt.setPower(0);
+            sleep(3000);
+            intakeFirst.setPower(1);
             sleep(5000);
-            conveyerBelt.setPower(-1);
-            sleep(200);
-            conveyerBelt.setPower(0);
-            shooter.setPower(-0.85);
-            sleep(5000);
-            conveyerBelt.setPower(-1);
-            sleep(2000);
-            conveyerBelt.setPower(0);
+            intakeFirst.setPower(0);
             shooter.setPower(0);
-            moveUntilTime("forward", inchesToTime(12));
+            moveUntilTime("forward", inchesToTime(66.0));
             break;
         }
     }
