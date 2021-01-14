@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "AutoRedPegs", group = "Linear OpMode")
-public class AutoRedLeft extends LinearOpMode {
+public class  AutoRedLeft extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorFrontLeft;
@@ -16,9 +16,14 @@ public class AutoRedLeft extends LinearOpMode {
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
     private DcMotor intakeFirst = null;
-    private CRServo intakeTurner = null;
+    private CRServo intakeCricket = null;
+    private CRServo rampPusher = null;
     private DcMotor conveyerBelt = null;
     private DcMotor shooter = null;
+    private DcMotor wobbleFlipper = null;
+    private Servo wobbleIntake = null;
+    private CRServo twoWheelIntake = null;
+    private CRServo conveyerServo = null;
 
     double[][] directions = {
             {1, -1, -1, 1},   /* up     */
@@ -67,18 +72,33 @@ public class AutoRedLeft extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        //driving
         motorFrontLeft = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         motorFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         motorBackLeft = hardwareMap.get(DcMotor.class, "leftBackDrive");
         motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
-        intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
-        intakeTurner = hardwareMap.get(CRServo.class, "intakeTurner");
-        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
+
+        //shooter and flipping
         shooter = hardwareMap.get(DcMotor.class, "shooter");
+        rampPusher = hardwareMap.get(CRServo.class, "rampPusher");
+
+        //wobble
+        wobbleFlipper = hardwareMap.get(DcMotor.class, "wobbleFlipper");
+        wobbleIntake = hardwareMap.get(Servo.class, "wobbleIntake");
+
+        //intake and conveyer
+        intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
+        twoWheelIntake = hardwareMap.get(CRServo.class, "twoWheelIntake");
+        intakeCricket = hardwareMap.get(CRServo.class, "intakeCricket"); //?
+        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
+        conveyerServo = hardwareMap.get(CRServo.class, "conveyerServo");
 
         waitForStart();
 
         while (opModeIsActive()) {
+            rampPusher.setPower(1);
+            sleep(2000);
+            rampPusher.setPower(0);
             sleep(2000);
             shooter.setPower(-1);
             moveUntilTime("forward", 1250);
