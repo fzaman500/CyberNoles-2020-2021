@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "AutoRedPegs", group = "Linear OpMode")
+@Autonomous(name = "AutoRedComp2", group = "Linear OpMode")
 public class  AutoRedLeft extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -96,27 +96,38 @@ public class  AutoRedLeft extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            rampPusher.setPower(1);
+            wobbleIntake.setPosition(1); //hold
             sleep(2000);
+            rampPusher.setPower(1); //push
+            sleep(4000);
             rampPusher.setPower(0);
             sleep(2000);
-            shooter.setPower(-1);
-            moveUntilTime("forward", 1250);
+            shooter.setPower(-1); //on shooter
+            moveUntilTime("forward", 2500);
             //moveUntilTime("left", 500);
             sleep(2000);
+            wobbleFlipper.setPower(-1); //move wobble
+            sleep(1000);
+            wobbleFlipper.setPower(0);
+            sleep(1000);
+            wobbleIntake.setPosition(0); //let go
+            sleep(1000);
+            //wobbleFlipper.setPower(.75); //return wobble
+            //sleep(1500);
+            //wobbleFlipper.setPower(0);
+            moveUntilTime("backward", 600);
             conveyerBelt.setPower(1);
-            sleep(2000);
+            sleep(1000);
+            conveyerBelt.setPower(0);
+            sleep(750);
+            conveyerBelt.setPower(1);
+            sleep(750);
+            conveyerBelt.setPower(0);
+            sleep(750);
+            conveyerBelt.setPower(1);
+            sleep(750);
             conveyerBelt.setPower(0);
             //moveUntilTime("left", 500);
-            sleep(3500);
-            conveyerBelt.setPower(1);
-            sleep(2000);
-            conveyerBelt.setPower(0);
-            //moveUntilTime("left", 500);
-            sleep(3000);
-            conveyerBelt.setPower(1);
-            sleep(2000);
-            conveyerBelt.setPower(0);
             shooter.setPower(0);
             moveUntilTime("forward", 500);
             break;

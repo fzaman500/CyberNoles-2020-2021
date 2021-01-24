@@ -224,7 +224,7 @@ public class teleOpDebug extends LinearOpMode {
 
             //wobble
             if (gamepad2.x) {
-                wobbleFlipper.setPower(0.5);
+                wobbleFlipper.setPower(0.75);
             }
 
             else if (gamepad2.y) {
@@ -241,6 +241,15 @@ public class teleOpDebug extends LinearOpMode {
 
             else if (gamepad1.y && wobbleIntake.getPosition() > 0) {
                 wobbleIntake.setPosition(wobbleIntake.getPosition() - 0.1);
+            }
+
+            if (gamepad1.a) {
+                shooter.setPower(-.70);
+
+            }
+            else {
+                shooter.setPower(0);
+                conveyerBelt.setPower(0);
             }
 
             idle();
