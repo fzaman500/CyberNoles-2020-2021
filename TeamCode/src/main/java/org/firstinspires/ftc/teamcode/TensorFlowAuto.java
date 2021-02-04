@@ -29,13 +29,22 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -57,6 +66,10 @@ public class TensorFlowAuto extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
+
+    BNO055IMU imu;
+    Orientation             lastAngles = new Orientation();
+    double                  globalAngle, power = .30, correction;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -85,6 +98,73 @@ public class TensorFlowAuto extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor motorFrontLeft;
+    private DcMotor motorFrontRight;
+    private DcMotor motorBackLeft;
+    private DcMotor motorBackRight;
+    private DcMotor intakeFirst = null;
+    private CRServo intakeCricket = null;
+    private CRServo rampPusher = null;
+    private DcMotor conveyerBelt = null;
+    private DcMotor shooter = null;
+    private DcMotor wobbleFlipper = null;
+    private Servo wobbleIntake = null;
+    private CRServo twoWheelIntake = null;
+    private CRServo conveyerServo = null;
+
+    double[][] directions = {
+            {1, -1, -1, 1},   /* up     */
+            {-1, 1, 1, -1},   /* down     */
+            {-1, -1, 1, 1},   /* left     */
+            {1, 1, -1, -1},   /* right     */
+    };
+
+    public void move(String direction) {
+        if (!direction.equals("none")) {
+            int d = 0;
+            if (direction.equals("forward"))
+                d = 0;
+            else if (direction.equals("backward"))
+                d = 1;
+            else if (direction.equals("left"))
+                d = 2;
+            else if (direction.equals("right"))
+                d = 3;
+            //regular
+            /*motorFrontLeft.setPower((directions[d][0]));
+            motorFrontRight.setPower((directions[d][1]));
+            motorBackLeft.setPower((directions[d][2]));
+            motorBackRight.setPower((directions[d][3]));*/
+
+            //gyro
+            motorFrontLeft.setPower((directions[d][0]) - correction);
+            motorFrontRight.setPower((directions[d][1]) + correction);
+            motorBackLeft.setPower((directions[d][2]) - correction);
+            motorBackRight.setPower((directions[d][3]) + correction);
+        }
+    }
+
+
+    public void moveUntilTime(String direction, int time){
+        move(direction);
+        double debounce = runtime.seconds() + 0.0;
+        while (debounce + (time / 1000.0) > runtime.seconds() && opModeIsActive()) {}
+
+        motorFrontLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorBackLeft.setPower(0);
+        motorBackRight.setPower(0);
+    }
+
+    private double limit(double power) {
+        if (power > 1)
+            return 1;
+        else
+            return power;
+    }
+
+
     @Override
     public void runOpMode() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -109,6 +189,27 @@ public class TensorFlowAuto extends LinearOpMode {
             // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
             //tfod.setZoom(2.5, 1.78);
         }
+        //driving
+        motorFrontLeft = hardwareMap.get(DcMotor.class, "leftFrontDrive");
+        motorFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
+        motorBackLeft = hardwareMap.get(DcMotor.class, "leftBackDrive");
+        motorBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
+
+        //shooter and flipping
+        shooter = hardwareMap.get(DcMotor.class, "shooter");
+        rampPusher = hardwareMap.get(CRServo.class, "rampPusher");
+
+        //wobble
+        wobbleFlipper = hardwareMap.get(DcMotor.class, "wobbleFlipper");
+        wobbleIntake = hardwareMap.get(Servo.class, "wobbleIntake");
+
+        //intake and conveyer
+        intakeFirst = hardwareMap.get(DcMotor.class, "intakeFirst");
+        twoWheelIntake = hardwareMap.get(CRServo.class, "twoWheelIntake");
+        intakeCricket = hardwareMap.get(CRServo.class, "intakeCricket"); //?
+        conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
+        conveyerServo = hardwareMap.get(CRServo.class, "conveyerServo");
+
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
@@ -117,25 +218,83 @@ public class TensorFlowAuto extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                wobbleIntake.setPosition(1); //hold
+                sleep(2000);
+                rampPusher.setPower(1); //push
+                sleep(4000);
+                rampPusher.setPower(0);
+                sleep(2000);
+                shooter.setPower(-1); //on shooter
+                moveUntilTime("forward", 750); // go up to discs
 
-                        // step through the list of recognitions and display boundary info.
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
-                        }
-                        telemetry.update();
-                    }
+                //scan discs
+                sleep(1000);
+                String disc_number = discs(5);
+                if (disc_number == "Quad") {
+                    telemetry.addData("Yay", disc_number);
+                    telemetry.update();
                 }
+                else if (disc_number == "Single") {
+                    telemetry.addData("Yay", disc_number);
+                    telemetry.update();
+                }
+               /* moveUntilTime("left", 750);
+                sleep(1000);
+                moveUntilTime("forward", 750);
+                sleep(1000);
+                moveUntilTime("right", 750);
+                sleep(1000);*/
+                if (disc_number.equals("Quad")) {
+                    moveUntilTime("forward", 2000);
+                    sleep(2000);
+                    wobbleFlipper.setPower(-1); //move wobble
+                    sleep(1000);
+                    wobbleFlipper.setPower(0);
+                    sleep(1000);
+                    wobbleIntake.setPosition(0); //let go
+                    sleep(1000);
+                    moveUntilTime("backward", 1000);
+                }
+                else if (disc_number.equals("Single")) {
+                    moveUntilTime("forward", 1500);
+                    sleep(2000);
+                    wobbleFlipper.setPower(-.75); //move wobble
+                    sleep(1000);
+                    wobbleFlipper.setPower(0);
+                    sleep(1000);
+                    wobbleIntake.setPosition(0); //let go
+                    sleep(1000);
+                    moveUntilTime("backward", 750);
+                }
+                else {
+                    moveUntilTime("forward", 1000);
+                    sleep(2000);
+                    wobbleFlipper.setPower(-1); //move wobble
+                    sleep(1000);
+                    wobbleFlipper.setPower(0);
+                    sleep(1000);
+                    wobbleIntake.setPosition(0); //let go
+                    sleep(1000);
+                    moveUntilTime("backward", 500);
+                }
+                sleep(1000);
+                conveyerBelt.setPower(1);
+                sleep(1000);
+                conveyerBelt.setPower(0);
+                sleep(750);
+                conveyerBelt.setPower(1);
+                sleep(750);
+                conveyerBelt.setPower(0);
+                sleep(750);
+                conveyerBelt.setPower(1);
+                sleep(750);
+                conveyerBelt.setPower(0);
+                //moveUntilTime("left", 500);
+                shooter.setPower(0);
+                moveUntilTime("forward", 500);
+                break;
+
+
             }
         }
 
@@ -172,5 +331,93 @@ public class TensorFlowAuto extends LinearOpMode {
         tfodParameters.minResultConfidence = 0.8f;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+    }
+
+    public String discs(double holdTime){
+        ElapsedTime holdTimer = new ElapsedTime();
+        holdTimer.reset();
+        String disc_number;
+        while (opModeIsActive() && holdTimer.time() < holdTime) {
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
+                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                recognition.getLeft(), recognition.getTop());
+                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                recognition.getRight(), recognition.getBottom());
+                        if (recognition.getLabel() == "Single")
+                            return "Single";
+                        else if (recognition.getLabel() == "Quad")
+                            return "Quad";
+                    }
+                    telemetry.update();
+                }
+            }
+        }
+        return "None";
+    }
+    private void resetAngle()
+    {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        globalAngle = 0;
+    }
+
+    /**
+     * Get current cumulative angle rotation from last reset.
+     * @return Angle in degrees. + = left, - = right.
+     */
+    private double getAngle()
+    {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
+    /**
+     * See if we are moving in a straight line and if not return a power correction value.
+     * @return Power adjustment, + is adjust left - is adjust right.
+     */
+    private double checkDirection()
+    {
+        // The gain value determines how sensitive the correction is to direction changes.
+        // You will have to experiment with your robot to get small smooth direction changes
+        // to stay on a straight line.
+        double correction, angle, gain = .80;
+
+        angle = getAngle();
+
+        if (angle == 0)
+            correction = 0;             // no adjustment.
+        else
+            correction = -angle;        // reverse sign of angle for correction.
+
+        correction = correction * gain;
+
+        return correction;
     }
 }
