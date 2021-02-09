@@ -157,6 +157,34 @@ public class TensorFlowAuto extends LinearOpMode {
         motorBackRight.setPower(0);
     }
 
+    public void turnUntilTime(String direction, int time){
+        int d = 0;
+        if (!direction.equals("none")) {
+            if (direction.equals("left"))
+                d = -1;
+            else if (direction.equals("right"))
+                d = 1;
+        }
+            //regular
+            /*motorFrontLeft.setPower((directions[d][0]));
+            motorFrontRight.setPower((directions[d][1]));
+            motorBackLeft.setPower((directions[d][2]));
+            motorBackRight.setPower((directions[d][3]));*/
+
+            //gyro
+            motorFrontLeft.setPower(d);
+            motorFrontRight.setPower(d);
+            motorBackLeft.setPower(d);
+            motorBackRight.setPower(d);
+        double debounce = runtime.seconds() + 0.0;
+        while (debounce + (time / 1000.0) > runtime.seconds() && opModeIsActive()) {}
+
+        motorFrontLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorBackLeft.setPower(0);
+        motorBackRight.setPower(0);
+    }
+
     private double limit(double power) {
         if (power > 1)
             return 1;
@@ -218,6 +246,7 @@ public class TensorFlowAuto extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
+
                 wobbleIntake.setPosition(1); //hold
                 sleep(2000);
                 rampPusher.setPower(1); //push
@@ -238,36 +267,43 @@ public class TensorFlowAuto extends LinearOpMode {
                     telemetry.addData("Yay", disc_number);
                     telemetry.update();
                 }
-               /* moveUntilTime("left", 750);
-                sleep(1000);
-                moveUntilTime("forward", 750);
-                sleep(1000);
-                moveUntilTime("right", 750);
-                sleep(1000);*/
+
+
                 if (disc_number.equals("Quad")) {
-                    moveUntilTime("forward", 2000);
+                    moveUntilTime("forward", 2250);
+                    moveUntilTime("right", 2000);
+                    turnUntilTime("left", 100);
                     sleep(2000);
                     wobbleFlipper.setPower(-1); //move wobble
                     sleep(1000);
                     wobbleFlipper.setPower(0);
                     sleep(1000);
+                    wobbleFlipper.setPower(1); //move wobble
+                    sleep(1000);
+                    wobbleFlipper.setPower(0);
+                    sleep(1000);
                     wobbleIntake.setPosition(0); //let go
                     sleep(1000);
-                    moveUntilTime("backward", 1000);
+                    moveUntilTime("backward", 1600);
                 }
                 else if (disc_number.equals("Single")) {
                     moveUntilTime("forward", 1500);
                     sleep(2000);
-                    wobbleFlipper.setPower(-.75); //move wobble
+                    wobbleFlipper.setPower(-1); //move wobble
                     sleep(1000);
                     wobbleFlipper.setPower(0);
                     sleep(1000);
                     wobbleIntake.setPosition(0); //let go
                     sleep(1000);
+                    wobbleFlipper.setPower(1); //move wobble
+                    sleep(1000);
+                    wobbleFlipper.setPower(0);
                     moveUntilTime("backward", 750);
+                    moveUntilTime("right", 2000);
                 }
                 else {
-                    moveUntilTime("forward", 1000);
+                    moveUntilTime("forward", 750);
+                    moveUntilTime("right", 2000);
                     sleep(2000);
                     wobbleFlipper.setPower(-1); //move wobble
                     sleep(1000);
@@ -275,23 +311,25 @@ public class TensorFlowAuto extends LinearOpMode {
                     sleep(1000);
                     wobbleIntake.setPosition(0); //let go
                     sleep(1000);
-                    moveUntilTime("backward", 500);
+                    moveUntilTime("backward", 250);
                 }
                 sleep(1000);
-                conveyerBelt.setPower(1);
+                //moveUntilTime("right", 500);
+                conveyerBelt.setPower(.9);
                 sleep(1000);
                 conveyerBelt.setPower(0);
                 sleep(750);
-                conveyerBelt.setPower(1);
+                conveyerBelt.setPower(.9);
                 sleep(750);
                 conveyerBelt.setPower(0);
                 sleep(750);
-                conveyerBelt.setPower(1);
+                conveyerBelt.setPower(.9);
                 sleep(750);
                 conveyerBelt.setPower(0);
                 //moveUntilTime("left", 500);
                 shooter.setPower(0);
-                moveUntilTime("forward", 500);
+                moveUntilTime("forward", 300);
+
                 break;
 
 
@@ -407,7 +445,7 @@ public class TensorFlowAuto extends LinearOpMode {
         // The gain value determines how sensitive the correction is to direction changes.
         // You will have to experiment with your robot to get small smooth direction changes
         // to stay on a straight line.
-        double correction, angle, gain = .80;
+        double correction, angle, gain = .50;
 
         angle = getAngle();
 
