@@ -49,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-
+//Test
 /**
  * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
  * determine the position of the Ultimate Goal game elements.
@@ -118,6 +118,8 @@ public class TensorFlowAuto extends LinearOpMode {
             {-1, 1, 1, -1},   /* down     */
             {-1, -1, 1, 1},   /* left     */
             {1, 1, -1, -1},   /* right     */
+            {-1, -1, -1, 1},  /* 90left    */
+            {1, 1, -1, 1},   /* 90right   */
     };
 
     public void move(String direction) {
@@ -131,6 +133,10 @@ public class TensorFlowAuto extends LinearOpMode {
                 d = 2;
             else if (direction.equals("right"))
                 d = 3;
+            else if (direction.equals("90left"))
+                d = 4;
+            else if (direction.equals("90right"))
+                d = 5;
             //regular
             /*motorFrontLeft.setPower((directions[d][0]));
             motorFrontRight.setPower((directions[d][1]));
@@ -145,6 +151,11 @@ public class TensorFlowAuto extends LinearOpMode {
         }
     }
 
+    public int inchesToTime(double in) {
+        double tDouble = (in) * 17.54385964912;
+        int t = (int) tDouble;
+        return t;
+    }
 
     public void moveUntilTime(String direction, int time){
         move(direction);
@@ -165,17 +176,17 @@ public class TensorFlowAuto extends LinearOpMode {
             else if (direction.equals("right"))
                 d = 1;
         }
-            //regular
+        //regular
             /*motorFrontLeft.setPower((directions[d][0]));
             motorFrontRight.setPower((directions[d][1]));
             motorBackLeft.setPower((directions[d][2]));
             motorBackRight.setPower((directions[d][3]));*/
 
-            //gyro
-            motorFrontLeft.setPower(d);
-            motorFrontRight.setPower(d);
-            motorBackLeft.setPower(d);
-            motorBackRight.setPower(d);
+        //gyro
+        motorFrontLeft.setPower(d);
+        motorFrontRight.setPower(d);
+        motorBackLeft.setPower(d);
+        motorBackRight.setPower(d);
         double debounce = runtime.seconds() + 0.0;
         while (debounce + (time / 1000.0) > runtime.seconds() && opModeIsActive()) {}
 
@@ -271,8 +282,8 @@ public class TensorFlowAuto extends LinearOpMode {
 
                 if (disc_number.equals("Quad")) {
                     moveUntilTime("forward", 2250);
-                    moveUntilTime("right", 2000);
-                    turnUntilTime("left", 100);
+                    moveUntilTime("right", 1700);
+                    turnUntilTime("90left", 400);
                     sleep(2000);
                     wobbleFlipper.setPower(-1); //move wobble
                     sleep(1000);
