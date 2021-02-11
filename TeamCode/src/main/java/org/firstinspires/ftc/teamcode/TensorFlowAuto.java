@@ -114,10 +114,12 @@ public class TensorFlowAuto extends LinearOpMode {
     private CRServo conveyerServo = null;
 
     double[][] directions = {
-            {1, -1, -1, 1},   /* up     */
+            {1, -1, -1, 1},   /* up       */
             {-1, 1, 1, -1},   /* down     */
             {-1, -1, 1, 1},   /* left     */
-            {1, 1, -1, -1},   /* right     */
+            {1, 1, -1, -1},   /* right    */
+            {-1, -1, -1, 1},  /* 90 left  */
+            {1, 1, -1, 1},    /* 90right  */
     };
 
     public void move(String direction) {
@@ -131,6 +133,10 @@ public class TensorFlowAuto extends LinearOpMode {
                 d = 2;
             else if (direction.equals("right"))
                 d = 3;
+            else if (direction.equals("90left"))
+                d = 4;
+            else if (direction.equals("90right"))
+                d = 5;
             //regular
             /*motorFrontLeft.setPower((directions[d][0]));
             motorFrontRight.setPower((directions[d][1]));
@@ -271,8 +277,8 @@ public class TensorFlowAuto extends LinearOpMode {
 
                 if (disc_number.equals("Quad")) {
                     moveUntilTime("forward", 2250);
-                    moveUntilTime("right", 2000);
-                    turnUntilTime("left", 100);
+                    moveUntilTime("right", 1700);
+                    moveUntilTime("90left", 400);
                     sleep(2000);
                     wobbleFlipper.setPower(-1); //move wobble
                     sleep(1000);
