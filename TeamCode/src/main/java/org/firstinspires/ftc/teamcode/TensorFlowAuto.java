@@ -49,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-//Test
+
 /**
  * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
  * determine the position of the Ultimate Goal game elements.
@@ -68,8 +68,8 @@ public class TensorFlowAuto extends LinearOpMode {
     private static final String LABEL_SECOND_ELEMENT = "Single";
 
     BNO055IMU imu;
-    Orientation             lastAngles = new Orientation();
-    double                  globalAngle, power = .30, correction;
+    Orientation lastAngles = new Orientation();
+    double globalAngle, power = .30, correction;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -118,8 +118,6 @@ public class TensorFlowAuto extends LinearOpMode {
             {-1, 1, 1, -1},   /* down     */
             {-1, -1, 1, 1},   /* left     */
             {1, 1, -1, -1},   /* right     */
-            {-1, -1, -1, 1},  /* 90left    */
-            {1, 1, -1, 1},   /* 90right   */
     };
 
     public void move(String direction) {
@@ -133,10 +131,6 @@ public class TensorFlowAuto extends LinearOpMode {
                 d = 2;
             else if (direction.equals("right"))
                 d = 3;
-            else if (direction.equals("90left"))
-                d = 4;
-            else if (direction.equals("90right"))
-                d = 5;
             //regular
             /*motorFrontLeft.setPower((directions[d][0]));
             motorFrontRight.setPower((directions[d][1]));
@@ -151,16 +145,12 @@ public class TensorFlowAuto extends LinearOpMode {
         }
     }
 
-    public int inchesToTime(double in) {
-        double tDouble = (in) * 17.54385964912;
-        int t = (int) tDouble;
-        return t;
-    }
 
-    public void moveUntilTime(String direction, int time){
+    public void moveUntilTime(String direction, int time) {
         move(direction);
         double debounce = runtime.seconds() + 0.0;
-        while (debounce + (time / 1000.0) > runtime.seconds() && opModeIsActive()) {}
+        while (debounce + (time / 1000.0) > runtime.seconds() && opModeIsActive()) {
+        }
 
         motorFrontLeft.setPower(0);
         motorFrontRight.setPower(0);
@@ -168,7 +158,7 @@ public class TensorFlowAuto extends LinearOpMode {
         motorBackRight.setPower(0);
     }
 
-    public void turnUntilTime(String direction, int time){
+    public void turnUntilTime(String direction, int time) {
         int d = 0;
         if (!direction.equals("none")) {
             if (direction.equals("left"))
@@ -188,7 +178,8 @@ public class TensorFlowAuto extends LinearOpMode {
         motorBackLeft.setPower(d);
         motorBackRight.setPower(d);
         double debounce = runtime.seconds() + 0.0;
-        while (debounce + (time / 1000.0) > runtime.seconds() && opModeIsActive()) {}
+        while (debounce + (time / 1000.0) > runtime.seconds() && opModeIsActive()) {
+        }
 
         motorFrontLeft.setPower(0);
         motorFrontRight.setPower(0);
@@ -273,8 +264,7 @@ public class TensorFlowAuto extends LinearOpMode {
                 if (disc_number == "Quad") {
                     telemetry.addData("Yay", disc_number);
                     telemetry.update();
-                }
-                else if (disc_number == "Single") {
+                } else if (disc_number == "Single") {
                     telemetry.addData("Yay", disc_number);
                     telemetry.update();
                 }
@@ -282,8 +272,8 @@ public class TensorFlowAuto extends LinearOpMode {
 
                 if (disc_number.equals("Quad")) {
                     moveUntilTime("forward", 2250);
-                    moveUntilTime("right", 1700);
-                    turnUntilTime("90left", 400);
+                    moveUntilTime("right", 2000);
+                    turnUntilTime("left", 100);
                     sleep(2000);
                     wobbleFlipper.setPower(-1); //move wobble
                     sleep(1000);
@@ -296,8 +286,7 @@ public class TensorFlowAuto extends LinearOpMode {
                     wobbleIntake.setPosition(0); //let go
                     sleep(1000);
                     moveUntilTime("backward", 1600);
-                }
-                else if (disc_number.equals("Single")) {
+                } else if (disc_number.equals("Single")) {
                     moveUntilTime("forward", 1500);
                     sleep(2000);
                     wobbleFlipper.setPower(-1); //move wobble
@@ -311,8 +300,7 @@ public class TensorFlowAuto extends LinearOpMode {
                     wobbleFlipper.setPower(0);
                     moveUntilTime("backward", 750);
                     moveUntilTime("right", 2000);
-                }
-                else {
+                } else {
                     moveUntilTime("forward", 750);
                     moveUntilTime("right", 2000);
                     sleep(2000);
@@ -382,7 +370,7 @@ public class TensorFlowAuto extends LinearOpMode {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 
-    public String discs(double holdTime){
+    public String discs(double holdTime) {
         ElapsedTime holdTimer = new ElapsedTime();
         holdTimer.reset();
         String disc_number;
@@ -413,8 +401,8 @@ public class TensorFlowAuto extends LinearOpMode {
         }
         return "None";
     }
-    private void resetAngle()
-    {
+
+    private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         globalAngle = 0;
@@ -422,10 +410,10 @@ public class TensorFlowAuto extends LinearOpMode {
 
     /**
      * Get current cumulative angle rotation from last reset.
+     *
      * @return Angle in degrees. + = left, - = right.
      */
-    private double getAngle()
-    {
+    private double getAngle() {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
@@ -449,10 +437,10 @@ public class TensorFlowAuto extends LinearOpMode {
 
     /**
      * See if we are moving in a straight line and if not return a power correction value.
+     *
      * @return Power adjustment, + is adjust left - is adjust right.
      */
-    private double checkDirection()
-    {
+    private double checkDirection() {
         // The gain value determines how sensitive the correction is to direction changes.
         // You will have to experiment with your robot to get small smooth direction changes
         // to stay on a straight line.
@@ -470,3 +458,4 @@ public class TensorFlowAuto extends LinearOpMode {
         return correction;
     }
 }
+//Test with new account.
