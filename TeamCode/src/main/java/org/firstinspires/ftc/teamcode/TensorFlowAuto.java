@@ -278,19 +278,21 @@ public class TensorFlowAuto extends LinearOpMode {
                 if (disc_number.equals("Quad")) {
                     moveUntilTime("forward", 2250);
                     moveUntilTime("right", 1700);
-                    moveUntilTime("90left", 400);
-                    sleep(2000);
+                    moveUntilTime("90right", 400);
+                    sleep(500);
                     wobbleFlipper.setPower(-1); //move wobble
                     sleep(1000);
                     wobbleFlipper.setPower(0);
                     sleep(1000);
+                    wobbleIntake.setPosition(0);
+                    sleep(500);
                     wobbleFlipper.setPower(1); //move wobble
                     sleep(1000);
                     wobbleFlipper.setPower(0);
-                    sleep(1000);
-                    wobbleIntake.setPosition(0); //let go
-                    sleep(1000);
-                    moveUntilTime("backward", 1600);
+                    sleep(500);
+                    moveUntilTime("90right", 400);
+                    moveUntilTime("left", 1700);
+                    moveUntilTime("backward", 2250);
                 }
                 else if (disc_number.equals("Single")) {
                     moveUntilTime("forward", 1500);
