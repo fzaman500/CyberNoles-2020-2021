@@ -276,7 +276,30 @@ public class TensorFlowAuto extends LinearOpMode {
 
 
                 if (disc_number.equals("Quad")) {
-                    moveUntilTime("forward", 1800);
+                    //New code at the request of Yash for shooting rather than wobble goal.
+                    moveUntilTime("forward", 210);
+                    sleep(500);
+                    shooter.setPower(-1);
+                    sleep(4500);
+                    conveyerBelt.setPower(0.9);
+                    sleep(400);
+                    conveyerBelt.setPower(0);
+                    moveUntilTime("right", 80);
+                    sleep(300);
+                    conveyerBelt.setPower(0.9);
+                    sleep(400);
+                    conveyerBelt.setPower(0);
+                    moveUntilTime("right", 80);
+                    sleep(300);
+                    conveyerBelt.setPower(0.9);
+                    sleep(400);
+                    moveUntilTime("left", 150);
+                    sleep(300);
+                    moveUntilTime("backward", 230);
+                    sleep(25000);
+
+                    //Commented section below is the code for the wobble goal.
+                    /*moveUntilTime("forward", 1800);
                     sleep(500);
                     moveUntilTime("right", 700);
                     moveUntilTime("90right", 400);
@@ -293,7 +316,7 @@ public class TensorFlowAuto extends LinearOpMode {
                     sleep(500);
                     moveUntilTime("90right", 400);
                     moveUntilTime("left", 1700);
-                    moveUntilTime("backward", 2250);
+                    moveUntilTime("backward", 2250);*/
                 }
                 else if (disc_number.equals("Single")) {
                     moveUntilTime("forward", 1500);

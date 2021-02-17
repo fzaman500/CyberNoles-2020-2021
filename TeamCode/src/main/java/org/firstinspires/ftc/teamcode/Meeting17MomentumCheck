@@ -278,7 +278,9 @@ public class TensorFlowAuto extends LinearOpMode {
                 if (disc_number.equals("Quad")) {
                     moveUntilTime("forward", 500);
                     sleep(500);
-                    shooter.setPower(
+                    shooter.setPower(-1);
+                    sleep(7000);
+
                 }
                 else if (disc_number.equals("Single")) {
                     moveUntilTime("forward", 1500);
