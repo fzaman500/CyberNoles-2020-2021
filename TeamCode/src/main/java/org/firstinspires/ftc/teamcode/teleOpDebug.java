@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import static java.lang.Math.abs;
+import java.lang.Math;
+import java.util.Calendar;
 
 /* Program for controller */
 @TeleOp(name = "TeleOpS3", group = "T3")
@@ -26,6 +28,16 @@ public class teleOpDebug extends LinearOpMode {
     private CRServo twoWheelIntake = null;
     private CRServo conveyerServo = null;
 
+    float distancePerRotation = 28;
+    int shooterPreviousPosition = 0;
+    int shooterCurrentPosition = 0;
+    float shooterDifference = 0;
+
+    long previousTime = 0;
+    long currentTime = 0;
+    long elapsedTime = 0;
+
+    Calendar timeCalendar = Calendar.getInstance();
 
     private double limit(double power) {
         if (power > 1)
@@ -45,6 +57,8 @@ public class teleOpDebug extends LinearOpMode {
         //shooter and flipping
         shooter = hardwareMap.get(DcMotor.class, "shooter");
         rampPusher = hardwareMap.get(CRServo.class, "rampPusher");
+
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //wobble
         wobbleFlipper = hardwareMap.get(DcMotor.class, "wobbleFlipper");
@@ -81,7 +95,28 @@ public class teleOpDebug extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            //encoders section
 
+            shooterPreviousPosition = shooterCurrentPosition;
+            shooterCurrentPosition = shooter.getCurrentPosition();
+            shooterDifference = (-shooterCurrentPosition) - (-shooterPreviousPosition);
+            float turnDifference = shooterDifference/distancePerRotation;
+
+            timeCalendar = Calendar.getInstance();
+
+            previousTime = currentTime;
+            currentTime = timeCalendar.getTimeInMillis();
+            elapsedTime = currentTime - previousTime;
+
+            float elapsedTimeFloat = (float)elapsedTime;
+
+            float shooterSpeed = (turnDifference/elapsedTimeFloat)*60000;
+
+            telemetry.addData("Distance", shooterCurrentPosition);
+            telemetry.addData("Shooter RPM", shooterSpeed);
+            telemetry.addData("Shooter Change", shooterDifference);
+
+            telemetry.update();
 
             /* This inverts the joystick inputs,
              * since the joystick inputs are gay. */
@@ -238,11 +273,11 @@ public class teleOpDebug extends LinearOpMode {
             // Combined into one if else to stop speed issues
             //for some reason doesnt spin as fast as gamepad1.a
             if (gamepad2.left_bumper) {
-                shooter.setPower(-1);
+                shooter.setPower(-0.75);
             }
             //faster than gamepad2.left_bumper (but its not supposed to be)
             else if (gamepad1.a) {
-                shooter.setPower(-.70);
+                shooter.setPower(-0.65);
 
             }
             else {
