@@ -26,6 +26,7 @@ public class teleOpDebug extends LinearOpMode {
     private CRServo twoWheelIntake = null;
     private CRServo conveyerServo = null;
 
+
     private double limit(double power) {
         if (power > 1)
             return 1;
@@ -56,7 +57,6 @@ public class teleOpDebug extends LinearOpMode {
         conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         conveyerServo = hardwareMap.get(CRServo.class, "conveyerServo");
 
-
         double maxPower = 1;
 
         double[][] directions = {
@@ -80,6 +80,8 @@ public class teleOpDebug extends LinearOpMode {
 
 
         while (opModeIsActive()) {
+
+
 
             /* This inverts the joystick inputs,
              * since the joystick inputs are gay. */
@@ -211,16 +213,6 @@ public class teleOpDebug extends LinearOpMode {
                 conveyerBelt.setPower(0);
             }
 
-            if (gamepad2.left_bumper) {
-                shooter.setPower(-1);
-            }
-            else if (gamepad2.right_bumper) {
-                shooter.setPower(-1);
-                conveyerBelt.setPower(1);
-            }
-            else {
-                shooter.setPower(0);
-            }
 
             //wobble
             if (gamepad2.x) {
@@ -243,13 +235,18 @@ public class teleOpDebug extends LinearOpMode {
                 wobbleIntake.setPosition(wobbleIntake.getPosition() - 0.1);
             }
 
-            if (gamepad1.a) {
+            // Combined into one if else to stop speed issues
+            //for some reason doesnt spin as fast as gamepad1.a
+            if (gamepad2.left_bumper) {
+                shooter.setPower(-1);
+            }
+            //faster than gamepad2.left_bumper (but its not supposed to be)
+            else if (gamepad1.a) {
                 shooter.setPower(-.70);
 
             }
             else {
                 shooter.setPower(0);
-                conveyerBelt.setPower(0);
             }
 
             idle();
