@@ -239,7 +239,7 @@ public class teleOpDebug extends LinearOpMode {
                 intakeCricket.setPower(0);
                 conveyerServo.setPower(0);
             }
-        /** OLD INTAKE
+        /* OLD INTAKE
             //intake
             if (gamepad2.a) {
                 intakeFirst.setPower(1);
@@ -253,7 +253,7 @@ public class teleOpDebug extends LinearOpMode {
                 twoWheelIntake.setPower(0);
                 conveyerServo.setPower(0);
             }
-**/
+*/
             if (gamepad2.dpad_up) {
                 conveyerBelt.setPower(-1);
             } else if (gamepad2.dpad_down) {
