@@ -38,6 +38,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+
+import java.util.Calendar;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -70,6 +73,10 @@ public class TensorFlowAuto extends LinearOpMode {
     BNO055IMU imu;
     Orientation             lastAngles = new Orientation();
     double                  globalAngle, power = .30, correction;
+
+    static final double MOTOR_TICK_COUNT = 1120;
+    double quarterTurn = (int)MOTOR_TICK_COUNT/4;
+
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -112,6 +119,17 @@ public class TensorFlowAuto extends LinearOpMode {
     private Servo wobbleIntake = null;
     private CRServo twoWheelIntake = null;
     private CRServo conveyerServo = null;
+
+    float distancePerRotation = 28;
+    int shooterPreviousPosition = 0;
+    int shooterCurrentPosition = 0;
+    float shooterDifference = 0;
+
+    long previousTime = 0;
+    long currentTime = 0;
+    long elapsedTime = 0;
+
+    Calendar timeCalendar = Calendar.getInstance();
 
     double[][] directions = {
             {1, -1, -1, 1},   /* up       */
@@ -191,6 +209,86 @@ public class TensorFlowAuto extends LinearOpMode {
         motorBackRight.setPower(0);
     }
 
+    public void moveUntilTicks(String direction, int ticks){
+        int d = 0;
+        if (!direction.equals("none")) {
+            d = 0;
+            if (direction.equals("forward"))
+                d = 1;
+            else if (direction.equals("backward"))
+                d = 0;
+            else if (direction.equals("left"))
+                d = 2;
+            else if (direction.equals("right"))
+                d = 3;
+            else if (direction.equals("90left"))
+                d = 4;
+            else if (direction.equals("90right"))
+                d = 5;
+        }
+
+        int FRnewTarget = motorFrontLeft.getCurrentPosition() + ticks*(int)directions[d][0];
+        int FLnewTarget = motorFrontRight.getCurrentPosition() + ticks*(int)directions[d][1];
+        int BRnewTarget = motorBackLeft.getCurrentPosition() + ticks*(int)directions[d][2];
+        int BLnewTarget = motorBackRight.getCurrentPosition() + ticks*(int)directions[d][3];
+
+
+
+        motorFrontRight.setTargetPosition(FRnewTarget);
+        motorFrontLeft.setTargetPosition(FLnewTarget);
+        motorBackRight.setTargetPosition(BRnewTarget);
+        motorBackLeft.setTargetPosition(BLnewTarget);
+
+
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        motorFrontLeft.setPower(1);
+        motorFrontRight.setPower(1);
+        motorBackLeft.setPower(1);
+        motorBackRight.setPower(1);
+
+
+        while (motorFrontRight.isBusy() || motorFrontLeft.isBusy() || motorBackRight.isBusy() || motorBackLeft.isBusy()) {
+            telemetry.addData("Status", "Running to position");
+            telemetry.update();
+        }
+
+        /*while (motorFrontLeft.isBusy()) {
+            telemetry.addData("Status", "Running to position");
+            telemetry.update();
+        }
+
+        while (motorBackRight.isBusy()) {
+            telemetry.addData("Status", "Running to position");
+            telemetry.update();
+        }
+
+        while (motorBackLeft.isBusy()) {
+            telemetry.addData("Status", "Running to position");
+            telemetry.update();
+        }*/
+
+        motorFrontLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorBackLeft.setPower(0);
+        motorBackRight.setPower(0);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        sleep(100);
+    }
+
     private double limit(double power) {
         if (power > 1)
             return 1;
@@ -223,6 +321,22 @@ public class TensorFlowAuto extends LinearOpMode {
             // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
             //tfod.setZoom(2.5, 1.78);
         }
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+        parameters.mode                = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled      = false;
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        imu.initialize(parameters);
+        while (!isStopRequested() && !imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
         //driving
         motorFrontLeft = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         motorFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
@@ -244,6 +358,17 @@ public class TensorFlowAuto extends LinearOpMode {
         conveyerBelt = hardwareMap.get(DcMotor.class, "conveyerBelt");
         conveyerServo = hardwareMap.get(CRServo.class, "conveyerServo");
 
+        //reset encoders
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
@@ -252,19 +377,16 @@ public class TensorFlowAuto extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-
                 wobbleIntake.setPosition(1); //hold
-                sleep(2000);
                 rampPusher.setPower(1); //push
-                sleep(4000);
+                sleep(3500);
                 rampPusher.setPower(0);
-                sleep(2000);
                 shooter.setPower(-1); //on shooter
-                moveUntilTime("forward", 750); // go up to discs
+                moveUntilTicks("forward", 3500); // go up to discs
 
                 //scan discs
-                sleep(1000);
-                String disc_number = discs(5);
+
+                String disc_number = discs(2);
                 if (disc_number == "Quad") {
                     telemetry.addData("Yay", disc_number);
                     telemetry.update();
@@ -274,10 +396,10 @@ public class TensorFlowAuto extends LinearOpMode {
                     telemetry.update();
                 }
 
-
+                //disc_number = "Single";
                 if (disc_number.equals("Quad")) {
                     //New code at the request of Yash for shooting rather than wobble goal.
-                    moveUntilTime("forward", 210);
+                   /* moveUntilTime("forward", 210);
                     sleep(500);
                     shooter.setPower(-1);
                     sleep(4500);
@@ -296,58 +418,73 @@ public class TensorFlowAuto extends LinearOpMode {
                     moveUntilTime("left", 150);
                     sleep(300);
                     moveUntilTime("backward", 230);
-                    sleep(25000);
+                    sleep(25000);*/
 
                     //Commented section below is the code for the wobble goal.
-                    /*moveUntilTime("forward", 1800);
+                    moveUntilTicks("forward", 1000); //6300
+                    moveUntilTicks("right", 2700);
+                    conveyerBelt.setPower(.9);
+                    sleep(3000);
+                    conveyerBelt.setPower(0);
                     sleep(500);
-                    moveUntilTime("right", 700);
-                    moveUntilTime("90right", 400);
-                    sleep(500);
-                    wobbleFlipper.setPower(-1); //move wobble
+                    moveUntilTicks("forward", 5300);
+                    wobbleFlipper.setPower(-.65); //move wobble
                     sleep(1000);
                     wobbleFlipper.setPower(0);
                     sleep(1000);
-                    wobbleIntake.setPosition(0);
-                    sleep(500);
-                    wobbleFlipper.setPower(1); //move wobble
-                    sleep(1000);
-                    wobbleFlipper.setPower(0);
-                    sleep(500);
-                    moveUntilTime("90right", 400);
-                    moveUntilTime("left", 1700);
-                    moveUntilTime("backward", 2250);*/
+                    wobbleIntake.setPosition(0); //let go
+                    moveUntilTicks("backward", 6300);
                 }
                 else if (disc_number.equals("Single")) {
-                    moveUntilTime("forward", 1500);
-                    sleep(2000);
-                    wobbleFlipper.setPower(-1); //move wobble
+                    moveUntilTicks("forward", 1000);
+                    moveUntilTicks("right", 2700);
+                    conveyerBelt.setPower(.9);
+                    //sleep(1000);
+                    //conveyerBelt.setPower(0);
+                    //sleep(750);
+                    //conveyerBelt.setPower(.9);
+                    //sleep(750);
+                    //conveyerBelt.setPower(0);
+                    //sleep(750);
+                    //conveyerBelt.setPower(.9);
+                    sleep(3000);
+                    conveyerBelt.setPower(0);
+                    moveUntilTicks("left", 2700);
+                    moveUntilTicks("forward", 3600);
+                    wobbleFlipper.setPower(-.65); //move wobble
                     sleep(1000);
                     wobbleFlipper.setPower(0);
                     sleep(1000);
                     wobbleIntake.setPosition(0); //let go
-                    sleep(1000);
-                    wobbleFlipper.setPower(1); //move wobble
-                    sleep(1000);
-                    wobbleFlipper.setPower(0);
-                    moveUntilTime("backward", 750);
-                    moveUntilTime("right", 2000);
+                    sleep(200);
+                    moveUntilTicks("backward", 1500);
                 }
                 else {
-                    moveUntilTime("forward", 750);
-                    moveUntilTime("right", 2000);
-                    sleep(2000);
-                    wobbleFlipper.setPower(-1); //move wobble
+                    moveUntilTicks("forward", 1000);
+                    moveUntilTicks("right", 2700);
+                    conveyerBelt.setPower(.9);
+                    sleep(1000);
+                    conveyerBelt.setPower(0);
+                    sleep(750);
+                    conveyerBelt.setPower(.9);
+                    sleep(750);
+                    conveyerBelt.setPower(0);
+                    sleep(750);
+                    conveyerBelt.setPower(.9);
+                    sleep(750);
+                    conveyerBelt.setPower(0);
+                    sleep(500);
+                    moveUntilTicks("forward", 1000);
+                    wobbleFlipper.setPower(-.65); //move wobble
                     sleep(1000);
                     wobbleFlipper.setPower(0);
                     sleep(1000);
                     wobbleIntake.setPosition(0); //let go
-                    sleep(1000);
-                    moveUntilTime("backward", 250);
+
                 }
                 sleep(1000);
                 //moveUntilTime("right", 500);
-                conveyerBelt.setPower(.9);
+                /*conveyerBelt.setPower(.9);
                 sleep(1000);
                 conveyerBelt.setPower(0);
                 sleep(750);
@@ -357,10 +494,11 @@ public class TensorFlowAuto extends LinearOpMode {
                 sleep(750);
                 conveyerBelt.setPower(.9);
                 sleep(750);
-                conveyerBelt.setPower(0);
+                conveyerBelt.setPower(0);*/
                 //moveUntilTime("left", 500);
                 shooter.setPower(0);
-                moveUntilTime("forward", 300);
+                sleep(1000);
+                //moveUntilTicks("forward", 700);
 
                 break;
 
@@ -491,4 +629,3 @@ public class TensorFlowAuto extends LinearOpMode {
         return correction;
     }
 }
-//Test
