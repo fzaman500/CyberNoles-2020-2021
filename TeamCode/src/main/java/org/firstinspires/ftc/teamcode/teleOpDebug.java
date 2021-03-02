@@ -213,21 +213,20 @@ public class teleOpDebug extends LinearOpMode {
             motorBackLeft.setPower(BLpower);
             motorBackRight.setPower(BRpower);
 
-            //ramp
-            if (gamepad2.b) {
-                rampPusher.setPower(1);
-            }
-            else {
-                rampPusher.setPower(0);
-            }
 
             //intake
             if (gamepad2.a) {
-                intakeFirst.setPower(1);
+                intakeFirst.setPower(-1);
                 twoWheelIntake.setPower(-1);
                 intakeCricket.setPower(-1);
                 conveyerServo.setPower(-1);
 
+            }
+            else if (gamepad2.b) {
+                intakeFirst.setPower(1);
+                twoWheelIntake.setPower(1);
+                intakeCricket.setPower(1);
+                conveyerServo.setPower(1);
             }
             else {
                 intakeFirst.setPower(0);
