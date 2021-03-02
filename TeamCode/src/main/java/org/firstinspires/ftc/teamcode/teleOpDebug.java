@@ -213,20 +213,22 @@ public class teleOpDebug extends LinearOpMode {
             motorBackLeft.setPower(BLpower);
             motorBackRight.setPower(BRpower);
 
-
+            //ramp
+            if (gamepad2.b) {
+                rampPusher.setPower(1);
+            }
+            else {
+                rampPusher.setPower(0);
+            }
+            /*
             //intake
-            if (gamepad2.a) {
-                intakeFirst.setPower(-1);
+            if (gamepad2.right_stick_x) {
+
+                intakeFirst.setPower(1);
                 twoWheelIntake.setPower(-1);
                 intakeCricket.setPower(-1);
                 conveyerServo.setPower(-1);
 
-            }
-            else if (gamepad2.b) {
-                intakeFirst.setPower(1);
-                twoWheelIntake.setPower(1);
-                intakeCricket.setPower(1);
-                conveyerServo.setPower(1);
             }
             else {
                 intakeFirst.setPower(0);
@@ -234,19 +236,36 @@ public class teleOpDebug extends LinearOpMode {
                 twoWheelIntake.setPower(0);
                 conveyerServo.setPower(0);
             }
+            */
 
-            if (gamepad2.dpad_up) {
+            if (gamepad2.right_stick_y > 0) {
+                intakeFirst.setPower(1);
+            }
+            else if (gamepad2.right_stick_y < 0) {
+                intakeFirst.setPower(-1);
+            }
+
+            if (gamepad2.left_stick_y > 0) {
+                intakeCricket.setPower(1);
+                conveyerServo.setPower(1);
+            }
+
+            if (gamepad2.left_stick_y < 0) {
+                intakeCricket.setPower(-1);
+                conveyerServo.setPower(-1);
+            }
+
+            if (gamepad2.dpad_up)
                 conveyerBelt.setPower(-1);
             }
 
-            else if (gamepad2.dpad_down) {
+            if (gamepad2.dpad_down) {
                 conveyerBelt.setPower(1);
             }
 
             else {
                 conveyerBelt.setPower(0);
             }
-
 
             //wobble
             if (gamepad2.x) {
@@ -271,13 +290,17 @@ public class teleOpDebug extends LinearOpMode {
 
             // Combined into one if else to stop speed issues
             //for some reason doesnt spin as fast as gamepad1.a
-            if (gamepad2.left_bumper) {
+            if (gamepad2.a) {
                 shooter.setPower(-0.75);
+            }
+
+            if (gamepad2.b)
+            {
+                shooter.setPower(0.75);
             }
             //faster than gamepad2.left_bumper (but its not supposed to be)
             else if (gamepad1.a) {
                 shooter.setPower(-0.65);
-
             }
             else {
                 shooter.setPower(0);
@@ -286,4 +309,3 @@ public class teleOpDebug extends LinearOpMode {
             idle();
         }
     }
-}
