@@ -100,7 +100,7 @@ public class teleOpDebug extends LinearOpMode {
             shooterPreviousPosition = shooterCurrentPosition;
             shooterCurrentPosition = shooter.getCurrentPosition();
             shooterDifference = (-shooterCurrentPosition) - (-shooterPreviousPosition);
-            float turnDifference = shooterDifference/distancePerRotation;
+            float turnDifference = shooterDifference / distancePerRotation;
 
             timeCalendar = Calendar.getInstance();
 
@@ -108,9 +108,9 @@ public class teleOpDebug extends LinearOpMode {
             currentTime = timeCalendar.getTimeInMillis();
             elapsedTime = currentTime - previousTime;
 
-            float elapsedTimeFloat = (float)elapsedTime;
+            float elapsedTimeFloat = (float) elapsedTime;
 
-            float shooterSpeed = (turnDifference/elapsedTimeFloat)*60000;
+            float shooterSpeed = (turnDifference / elapsedTimeFloat) * 60000;
 
             telemetry.addData("Distance", shooterCurrentPosition);
             telemetry.addData("Shooter RPM", shooterSpeed);
@@ -216,35 +216,49 @@ public class teleOpDebug extends LinearOpMode {
             //ramp
             if (gamepad2.b) {
                 rampPusher.setPower(1);
-            }
-            else {
+            } else {
                 rampPusher.setPower(0);
             }
 
+            //new intake (with sticks)
+
+            //initial (slope) section
+            if (gamepad2.right_stick_y > 0.05 || gamepad2.right_stick_y < -0.05) {
+                double y = gamepad2.right_stick_y;
+                intakeFirst.setPower(y);
+            } else {
+                intakeFirst.setPower(0);
+            }
+
+            //servo section
+            if (gamepad2.left_stick_y > 0.05 || gamepad2.left_stick_y < -0.05) {
+                double y = gamepad2.left_stick_y;
+                intakeCricket.setPower(-y);
+                conveyerServo.setPower(-y);
+            } else {
+                intakeCricket.setPower(0);
+                conveyerServo.setPower(0);
+            }
+        /** OLD INTAKE
             //intake
             if (gamepad2.a) {
                 intakeFirst.setPower(1);
-                twoWheelIntake.setPower(-1);
+             //   twoWheelIntake.setPower(-1);
                 intakeCricket.setPower(-1);
                 conveyerServo.setPower(-1);
 
-            }
-            else {
+            } else {
                 intakeFirst.setPower(0);
                 intakeCricket.setPower(0);
                 twoWheelIntake.setPower(0);
                 conveyerServo.setPower(0);
             }
-
+**/
             if (gamepad2.dpad_up) {
                 conveyerBelt.setPower(-1);
-            }
-
-            else if (gamepad2.dpad_down) {
+            } else if (gamepad2.dpad_down) {
                 conveyerBelt.setPower(1);
-            }
-
-            else {
+            } else {
                 conveyerBelt.setPower(0);
             }
 
@@ -252,37 +266,28 @@ public class teleOpDebug extends LinearOpMode {
             //wobble
             if (gamepad2.x) {
                 wobbleFlipper.setPower(0.75);
-            }
-
-            else if (gamepad2.y) {
+            } else if (gamepad2.y) {
                 wobbleFlipper.setPower(-0.5);
-            }
-
-            else {
+            } else {
                 wobbleFlipper.setPower(0);
             }
 
             if (gamepad1.x && wobbleIntake.getPosition() < 1) {
                 wobbleIntake.setPosition(wobbleIntake.getPosition() + 0.1);
-            }
-
-            else if (gamepad1.y && wobbleIntake.getPosition() > 0) {
+            } else if (gamepad1.y && wobbleIntake.getPosition() > 0) {
                 wobbleIntake.setPosition(wobbleIntake.getPosition() - 0.1);
             }
 
             // Combined into one if else to stop speed issues
-            //for some reason doesnt spin as fast as gamepad1.a
             if (gamepad2.left_bumper) {
-                shooter.setPower(-0.75);
-            }
-            //faster than gamepad2.left_bumper (but its not supposed to be)
-            else if (gamepad1.a) {
+                shooter.setPower(-0.82);
+            } else if (gamepad1.a) {
                 shooter.setPower(-0.65);
 
-            }
-            else {
+            } else if (gamepad2.right_bumper) {
                 shooter.setPower(0);
             }
+
 
             idle();
         }
